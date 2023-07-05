@@ -1,0 +1,41 @@
+.up-arrow {
+	display: block;
+	position: absolute;
+}
+.up-arrow-arrow {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	filter: drop-shadow(0px 2px 3px #1e1e1e);
+}
+.up-arrow-arrow > div {
+	background-color: var(--bright);
+	position: relative;
+}
+.up-arrow-text {
+	color: #ededed;
+	font-size: 20px;
+	position: relative;
+	margin: 0px;
+	bottom: 10px;
+	padding-top: 6px;
+}
+.up-arrow-left {
+	width: 16px;
+	height: 5px;
+	rotate: -45deg;
+	left: 6.5px;
+	bottom: 16px;
+}
+.up-arrow-middle {
+	width: 5px;
+	height: 24px;
+	bottom: 8px;
+}
+.up-arrow-right {
+	width: 16px;
+	height: 5px;
+	rotate: 45deg;
+	right: 6.5px;
+	bottom: 16px;
+}

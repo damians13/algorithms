@@ -1,0 +1,19 @@
+.box {
+	position: absolute;
+	display: flex;
+	background-color: #1e1e1e;
+	justify-content: center;
+	align-items: center;
+	min-height: 48px;
+	min-width: 48px;
+	left: 0px;
+	top: 0px;
+}
+
+.box-text {
+	color: #ededed;
+	font-size: 24px;
+	margin: 0px;
+	padding: 4px;
+	user-select: none;
+}

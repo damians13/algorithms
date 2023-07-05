@@ -1,0 +1,28 @@
+#home-title {
+	display: flex;
+	align-items: baseline;
+}
+#home-title-pronounciation {
+	color: #ababab;
+	margin: 0px;
+	position: relative;
+	bottom: 5px;
+	font-size: 30px;
+}
+#home-description {
+	color: #ededed;
+	padding: 20px;
+}
+#home-box {
+	width: 80%;
+}
+#home-random {
+	border-radius: 8px;
+}
+#home-random > p {
+	font-size: 60px;
+	font-weight: 600;
+	padding: 20px;
+	text-shadow: var(--text-shadow);
+	margin: 0px;
+}

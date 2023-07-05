@@ -1,0 +1,69 @@
+#sidebar-hamburger {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	margin: 4px;
+	left: 2px;
+}
+.sidebar-hamburger-line {
+	display: block;
+	background-color: var(--bright);
+	height: 0.75vh;
+	width: 4vh;
+	margin: 4px 2px 2px 2px;
+	border-radius: 8px;
+	position: relative;
+}
+.sidebar-hidden {
+	display: none;
+}
+#sidebar {
+	position: fixed;
+	z-index: 100;
+	overflow: hidden;
+}
+#sidebar-options {
+	color: var(--bright);
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	text-shadow: var(--text-shadow);
+	font-size: larger;
+	font-weight: 500;
+	user-select: none;
+}
+#sidebar-options > p {
+	margin: 4px 0px 4px 8px;
+	white-space: nowrap;
+}
+#sidebar-x {
+	width: 100%;
+	height: 48px;
+}
+.sidebar-x-line {
+	background-color: var(--bright);
+	height: 0.75vh;
+	width: 4vh;
+	margin: 4px 2px 2px 2px;
+	border-radius: 8px;
+	position: relative;
+}
+.sidebar-alg-button {
+	font-family: var(--font);
+	font-size: large;
+	margin: 4px;
+	border-radius: 4px;
+	width: 100%;
+	border: none;
+	background-color: var(--dark);
+	color: #ededed;
+	text-align: start;
+	white-space: nowrap;
+}
+.sidebar-alg-button:hover {
+	background-color: var(--mid);
+}
+.sidebar-alg-button:active {
+	background-color: var(--bright);
+}

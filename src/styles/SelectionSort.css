@@ -1,0 +1,29 @@
+#ss-box {
+	width: 80%;
+}
+#ss-buttons {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	justify-content: center;
+}
+.box {
+	transition: ease-in-out 0.2s;
+}
+.ss-button {
+	height: 32px;
+	border-radius: 4px;
+	font-size: 24px;
+	margin: 8px;
+}
+#ss-boxes {
+	display: flex;
+	position: relative;
+	width: 100%;
+	height: 48px;
+	margin-top: 64px;
+	margin-bottom: 64px;
+}
+.highlight {
+	background-color: var(--bright) !important;
+}

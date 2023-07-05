@@ -1,0 +1,85 @@
+* {
+	transition: ease-in-out 0.2s;
+}
+
+html,
+body,
+#root {
+	margin: 0px;
+	height: 100%;
+	background-color: #1e1e1e;
+	overflow: hidden;
+}
+#app {
+	display: flex;
+	margin: 0px;
+	height: 100%;
+}
+#sidebar {
+	background-color: var(--dark);
+	height: 100%;
+}
+.title-text {
+	color: var(--bright);
+	font-weight: 600;
+	text-shadow: var(--text-shadow);
+	font-size: 60px;
+	margin: 0px;
+	padding: 0px 20px;
+}
+.title-description {
+	color: #ededed;
+	padding: 0px 20px 20px 20px;
+	margin: 0px;
+	font-style: italic;
+}
+.page {
+	font-size: 25px;
+	justify-content: center;
+	display: flex;
+	flex-direction: column;
+	row-gap: 5%;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+	--text-shadow: 0px 3px 6px rgba(0, 0, 0, 0.4);
+	overflow: hidden;
+}
+.fg-box {
+	background-color: #333333;
+	border-radius: 8px;
+}
+.button {
+	background-color: var(--mid);
+	color: #ededed;
+	width: fit-content;
+	border: none;
+	transition: 0.1s ease-in-out;
+	box-shadow: 0px 2px 5px 0px #1e1e1e;
+}
+.button:active {
+	background-color: var(--dark);
+}
+::selection {
+	color: #ededed;
+	background: var(--mid);
+}
+::-webkit-selection {
+	color: #ededed;
+	background: var(--mid);
+}
+::-moz-selection {
+	color: #ededed;
+	background: var(--mid);
+}
+::-ms-selection {
+	color: #ededed;
+	background: var(--mid);
+}
+::-webkit-scrollbar {
+	background-color: rgb(45, 45, 45);
+	width: 4px;
+}
+::-webkit-scrollbar-thumb {
+	background-color: #ededed;
+}

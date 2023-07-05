@@ -1,0 +1,41 @@
+.down-arrow {
+	display: block;
+	position: absolute;
+}
+.down-arrow-arrow {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	filter: drop-shadow(0px 2px 3px #1e1e1e);
+}
+.down-arrow-arrow > div {
+	background-color: var(--bright);
+	position: relative;
+}
+.down-arrow-text {
+	color: #ededed;
+	font-size: 20px;
+	position: relative;
+	margin: 0px;
+	bottom: 10px;
+	padding-top: 6px;
+}
+.down-arrow-left {
+	width: 16px;
+	height: 5px;
+	rotate: 45deg;
+	left: 6.5px;
+	bottom: 0px;
+}
+.down-arrow-middle {
+	width: 5px;
+	height: 24px;
+	bottom: 8px;
+}
+.down-arrow-right {
+	width: 16px;
+	height: 5px;
+	rotate: -45deg;
+	right: 6.5px;
+	bottom: 0px;
+}
