@@ -218,10 +218,10 @@ function SelectionSort({ num }) {
 					})()}
 				</div>
 			</div>
-			<div id="ss-extra">
-				<div id="ss-steps-box" className="fg-box">
-					<p className="ss-extra-box-text">Steps</p>
-					<div className="ss-extra-box-children">
+			<div className="extra">
+				<div className="fg-box">
+					<p className="extra-box-text">Steps</p>
+					<div className="extra-box-children">
 						<ol type="1">
 							<li>
 								Moving down the array from left to right, keep track of the current index and call it <code>i</code>.
@@ -232,16 +232,16 @@ function SelectionSort({ num }) {
 									Find the index of the minimum value in the array between i and the end of the array, inclusive. Call this index <code>j</code>.
 								</li>
 								<li>
-									Swap the elements at indices <code>i</code> and <code>j</code> in the array.
+									Swap the elements in the array at indices <code>i</code> and <code>j</code>.
 								</li>
 							</ol>
 							<li>Return the sorted array.</li>
 						</ol>
 					</div>
 				</div>
-				<div id="ss-code-box" className="fg-box">
-					<p className="ss-extra-box-text">Code</p>
-					<div className="ss-extra-box-children">
+				<div className="fg-box">
+					<p className="extra-box-text">Code</p>
+					<div className="extra-box-children">
 						<SyntaxHighlighter language="java" style={tomorrow} showLineNumbers>
 							{`// This function returns the index of the minimum value
 // found in the given array of integers past startIndex.

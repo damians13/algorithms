@@ -27,31 +27,6 @@
 .highlight {
 	background-color: var(--bright) !important;
 }
-
-#ss-extra {
-	display: flex;
-	width: 80%;
-	justify-content: space-between;
-	max-height: 35%;
-}
-#ss-extra > div {
-	width: 45%;
-	overflow: hidden;
-	max-height: fit-content;
-}
-.ss-extra-box-text {
-	color: #ededed;
-	margin: 4px 4px 4px 20px;
-}
-.ss-extra-box-children {
-	overflow-y: scroll;
-	max-height: 80%;
-	background-color: rgb(45, 45, 45);
-}
-.ss-extra-box-children > * {
-	color: #ededed;
-	font-size: 16px;
-}
 ol {
 	margin: 0px;
 }

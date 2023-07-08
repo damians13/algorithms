@@ -290,10 +290,10 @@ function BinarySearch({ nums }) {
 				</div>
 				<UpArrow id="mid-arrow" text="Mid" />
 			</div>
-			<div id="bs-extra">
-				<div id="bs-steps-box" className="fg-box">
-					<p className="bs-extra-box-text">Steps</p>
-					<div className="bs-extra-box-children">
+			<div className="extra">
+				<div className="fg-box">
+					<p className="extra-box-text">Steps</p>
+					<div className="extra-box-children">
 						<ol type="1">
 							<li>
 								Start a <code>left</code> pointer at the beginning of the array, and start a <code>right</code> pointer past the end of the array.
@@ -319,9 +319,9 @@ function BinarySearch({ nums }) {
 						</ol>
 					</div>
 				</div>
-				<div id="bs-code-box" className="fg-box">
-					<p className="bs-extra-box-text">Code</p>
-					<div className="bs-extra-box-children">
+				<div className="fg-box">
+					<p className="extra-box-text">Code</p>
+					<div className="extra-box-children">
 						<SyntaxHighlighter language="java" style={tomorrow} showLineNumbers>
 							{`private int binarySearch(int[] array, int target) {
 	int left = 0;
