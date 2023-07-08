@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from "react"
 import "../styles/SelectionSort.css"
 import Box, { animatedMove } from "../components/Box"
+import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter"
+import java from "react-syntax-highlighter/dist/cjs/languages/prism/java"
+import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism"
 
 function generateArray(num) {
 	let arr = []
@@ -79,6 +82,8 @@ function SelectionSort({ num }) {
 	const [ssBoxWidth, setSsBoxWidth] = useState(0)
 	const [animationPlaying, setAnimationPlaying] = useState(false)
 	const [obj, setObj] = useState(new SelectionSortStateObject(generateArray(num)))
+
+	SyntaxHighlighter.registerLanguage("java", java)
 
 	function handleSortClick() {
 		if (animationPlaying) {
@@ -213,8 +218,73 @@ function SelectionSort({ num }) {
 					})()}
 				</div>
 			</div>
+			<div id="ss-extra">
+				<div id="ss-steps-box" className="fg-box">
+					<p className="ss-extra-box-text">Steps</p>
+					<div className="ss-extra-box-children">
+						<ol type="1">
+							<li>
+								Moving down the array from left to right, keep track of the current index and call it <code>i</code>.
+							</li>
+							<li>Do the following for every index in the array:</li>
+							<ol type="a">
+								<li>
+									Find the index of the minimum value in the array between i and the end of the array, inclusive. Call this index <code>j</code>.
+								</li>
+								<li>
+									Swap the elements at indices <code>i</code> and <code>j</code> in the array.
+								</li>
+							</ol>
+							<li>Return the sorted array.</li>
+						</ol>
+					</div>
+				</div>
+				<div id="ss-code-box" className="fg-box">
+					<p className="ss-extra-box-text">Code</p>
+					<div className="ss-extra-box-children">
+						<SyntaxHighlighter language="java" style={tomorrow} showLineNumbers>
+							{`// This function returns the index of the minimum value
+// found in the given array of integers past startIndex.
+private static int findMin(int[] array, int startIndex) {
+    int minValue = array[startIndex];
+    int minValueIndex = startIndex;
+    for (int i = startIndex + 1; i < array.length; i++) {
+        if (array[i] < minValue) {
+            minValue = array[i];
+            minValueIndex = i;
+        }
+    }
+    return minValueIndex;
+}
+
+// This function swaps the values at indices a and b
+// in the given array.
+private static int[] swap(int[] array, int a, int b) {
+    int temp = array[a];
+    array[a] = array[b];
+    array[b] = temp;
+    return array;
+}
+
+// This function sorts the given array using the
+// selection sort algorithm.
+private static int[] selectionSort(int[] array) {
+    for (int i = 0; i < array.length; i++) {
+        int minIndex = findMin(array, i);
+        array = swap(array, minIndex, i);
+    }
+    return array;
+}`}
+						</SyntaxHighlighter>
+					</div>
+				</div>
+			</div>
 		</div>
 	)
 }
 
 export default SelectionSort
+
+/**
+ * TODO: Fix bug where animations try to keep running after switching to another page
+ */
