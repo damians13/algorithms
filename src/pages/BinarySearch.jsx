@@ -295,14 +295,24 @@ function BinarySearch({ nums }) {
 					<p className="bs-extra-box-text">Steps</p>
 					<div className="bs-extra-box-children">
 						<ol type="1">
-							<li>Start a “left” pointer at the beginning of the array, and start a “right” pointer past the end of the array.</li>
 							<li>
-								While “left” and “right” are pointing to different entries (ie. left != right), do the following:
+								Start a <code>left</code> pointer at the beginning of the array, and start a <code>right</code> pointer past the end of the array.
+							</li>
+							<li>
+								While <code>left</code> and <code>right</code> are pointing to different entries (ie. <code>left != right</code>), do the following:
 								<ol type="a">
-									<li>Calculate the midpoint (arithmetic mean, rounded down) between “left” and “right”, call it “mid”.</li>
-									<li>If the value at “mid” is the target value, return “mid”.</li>
-									<li>If the value at “mid” is less than the target value, set “right” equal to “mid” and go to step 2.</li>
-									<li>If the value at “mid” is greater than the target value, set “left” equal to “mid” and go to step 2.</li>
+									<li>
+										Calculate the midpoint (arithmetic mean, rounded down) between <code>left</code> and <code>right</code>, call it <code>mid</code>.
+									</li>
+									<li>
+										If the value at <code>mid</code> is the target value, return <code>mid</code>.
+									</li>
+									<li>
+										If the value at <code>mid</code> is less than the target value, set <code>right</code> equal to <code>mid</code> and go to step 2.
+									</li>
+									<li>
+										If the value at <code>mid</code> is greater than the target value, set <code>left</code> equal to <code>mid</code> and go to step 2.
+									</li>
 								</ol>
 							</li>
 							<li>If no value has been returned after the loop has run, then the target value does not appear in the array.</li>
