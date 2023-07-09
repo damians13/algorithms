@@ -91,17 +91,19 @@ export function generateSortedArray(numBoxes) {
 
 /**
  * React functional component for the BinarySearch page
- * @param {number[]} nums the sorted array of numbers to be used in the search algorithm
  * @returns the JSX of the component
  */
-function BinarySearch({ nums }) {
-	const numBoxes = nums.length
+function BinarySearch() {
+	const numBoxes = 9
 	const inputRegex = /^-?\d*$/
-	const initialTarget = nums[Math.floor(Math.random() * numBoxes)]
 
 	SyntaxHighlighter.registerLanguage("java", java)
 
 	// Initialize state
+	const [nums, setNums] = useState(generateSortedArray(numBoxes))
+
+	const initialTarget = nums[Math.floor(Math.random() * numBoxes)]
+
 	const [inputText, setInputText] = useState("" + initialTarget)
 	const [obj, setObj] = useState(new BinarySearchStateObject(nums, initialTarget))
 	const [animationPlaying, setAnimationPlaying] = useState(false)
@@ -122,6 +124,15 @@ function BinarySearch({ nums }) {
 		// Start new search animation with a state update
 		setAnimationPlaying(true)
 		setObj(new BinarySearchStateObject(nums, num))
+	}
+
+	function handleRandomizeClick() {
+		if (animationPlaying) {
+			return
+		}
+		let newNums = generateSortedArray(numBoxes)
+		setNums(newNums)
+		setInputText(newNums[Math.floor(Math.random() * numBoxes)])
 	}
 
 	/**
@@ -206,7 +217,11 @@ function BinarySearch({ nums }) {
 	 * Created with a callback hook because bxBoxWidth will change each resize
 	 */
 	const handleResize = useCallback(() => {
-		let newWidth = document.getElementById("bs-boxes").clientWidth
+		let boxes = document.getElementById("bs-boxes")
+		if (boxes === null) {
+			return
+		}
+		let newWidth = boxes.clientWidth
 		for (let i = 0; i < numBoxes; i++) {
 			let boxWidth = document.getElementById("bs-b" + i).clientWidth
 			let newPosition = (newWidth / (numBoxes + 1)) * (i + 1) - boxWidth / 2
@@ -274,6 +289,9 @@ function BinarySearch({ nums }) {
 					<input id="bs-search-input" value={inputText} onKeyDown={handleInputKeyDown} onChange={() => {}} />
 					<button id="bs-search-button" className="button" onClick={handleInputClick}>
 						GO
+					</button>
+					<button id="bs-randomize" className="button" onClick={handleRandomizeClick}>
+						RANDOMIZE
 					</button>
 				</div>
 				<DownArrow id="left-arrow" text="Left" />
