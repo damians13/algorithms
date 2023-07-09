@@ -23,9 +23,9 @@ export class BinarySearchStateObject {
 		this.found = false
 
 		// Store previous x coordinates of the arrows used in the animations
-		this.oldLeftX = NaN
-		this.oldMidX = NaN
-		this.oldRightX = NaN
+		this.oldLeftX = -1
+		this.oldMidX = -1
+		this.oldRightX = -1
 	}
 
 	/**
@@ -130,10 +130,21 @@ function BinarySearch() {
 		if (animationPlaying) {
 			return
 		}
+		// Remove highlight from the animation if applicable
+		if (obj.found) {
+			document.getElementById("bs-b" + obj.mid).classList.remove("highlight")
+		}
+
+		// Randomize the numbers shown in the array
 		let newNums = generateSortedArray(numBoxes)
 		setNums(newNums)
 		setInputText(newNums[Math.floor(Math.random() * numBoxes)])
 	}
+
+	// Reset search state whenever the nums array changes
+	useEffect(() => {
+		setObj(new BinarySearchStateObject(nums))
+	}, [nums])
 
 	/**
 	 * Event handler for keyDown on the input element, used to ensure that only numbers can be used as input
@@ -252,11 +263,29 @@ function BinarySearch() {
 		// Using Math.min to prevent the right arrow from going off the page
 		let rightPosition = Math.min((totalWidth / (numBoxes + 1)) * (obj.right + 1) - rightWidth / 2, totalWidth - arrowEdgeDistance - rightWidth / 2)
 
-		// Only run the animation when positions have changed
+		// Only run the animation on initial load or when positions have changed
 		if (obj.oldLeftX !== leftPosition || obj.oldMidX !== midPosition || obj.oldRightX !== rightPosition) {
-			animatedMove("left-arrow", obj.oldLeftX + "px", "-60px", leftPosition + "px", "-60px")
-			animatedMove("mid-arrow", obj.oldMidX + "px", "-60px", midPosition + "px", "-60px")
-			animatedMove("right-arrow", obj.oldRightX + "px", "-60px", rightPosition + "px", "-60px")
+			// Ensure that the arrows stay on screen
+			if (obj.oldLeftX < 0) {
+				obj.oldLeftX = leftPosition
+			}
+			if (obj.oldMidX < 0) {
+				obj.oldMidX = midPosition
+			}
+			if (obj.oldRightX < 0) {
+				obj.oldRightX = rightPosition
+			}
+
+			// Prevents the arrows moving off screen on initial load when the positions are negative
+			if (leftPosition >= 0) {
+				animatedMove("left-arrow", obj.oldLeftX + "px", "-60px", leftPosition + "px", "-60px")
+			}
+			if (midPosition >= 0) {
+				animatedMove("mid-arrow", obj.oldMidX + "px", "-60px", midPosition + "px", "-60px")
+			}
+			if (rightPosition >= 0) {
+				animatedMove("right-arrow", obj.oldRightX + "px", "-60px", rightPosition + "px", "-60px")
+			}
 		}
 
 		obj.oldLeftX = leftPosition
