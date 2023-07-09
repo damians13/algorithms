@@ -59,7 +59,7 @@ function App() {
 				<Route path="/" element={<Home random={random} />} />
 				{(() => {
 					let routes = []
-					pages.forEach(page => routes.push(<Route path={page.path} element={page.element} />))
+					pages.forEach(page => routes.push(<Route path={page.path} element={page.element} key={page.path} />))
 					return routes
 				})()}
 			</Routes>
