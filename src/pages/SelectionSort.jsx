@@ -78,7 +78,13 @@ export class SelectionSortStateObject {
 	}
 }
 
-function SelectionSort({ num }) {
+/**
+ * React functional component for the SelectionSort page
+ * @returns the JSX of the component
+ */
+function SelectionSort() {
+	const num = 9
+
 	const [ssBoxWidth, setSsBoxWidth] = useState(0)
 	const [animationPlaying, setAnimationPlaying] = useState(false)
 	const [obj, setObj] = useState(new SelectionSortStateObject(generateArray(num)))
@@ -104,7 +110,11 @@ function SelectionSort({ num }) {
 	 * Created with a callback hook because bxBoxWidth will change each resize
 	 */
 	const handleResize = useCallback(() => {
-		let newWidth = document.getElementById("ss-boxes").clientWidth
+		let boxes = document.getElementById("ss-boxes")
+		if (boxes === null) {
+			return
+		}
+		let newWidth = boxes.clientWidth
 		for (let i = 0; i < num; i++) {
 			let boxWidth = document.getElementById("ss-b" + i).clientWidth
 			let newPosition = (newWidth / (num + 1)) * (i + 1) - boxWidth / 2

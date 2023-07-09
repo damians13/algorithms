@@ -1,8 +1,11 @@
 import "../styles/Home.css"
+import { useNavigate } from "react-router-dom"
 
-function Home({ random, setPage }) {
+function Home({ random }) {
+	const navigate = useNavigate()
+
 	function handleRandomClick() {
-		setPage(random())
+		navigate(random())
 	}
 
 	return (

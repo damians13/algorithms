@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react"
 import "../styles/Sidebar.css"
-import Home from "../pages/Home"
-import BinarySearch, { generateSortedArray } from "../pages/BinarySearch"
-import SelectionSort from "../pages/SelectionSort"
+import { Link, useNavigate } from "react-router-dom"
 
-function Sidebar({ random, setColourScheme, setPage }) {
+function Sidebar({ random, setColourScheme }) {
 	const [expanded, setExpanded] = useState(true)
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		setExpanded(false)
@@ -43,33 +42,17 @@ function Sidebar({ random, setColourScheme, setPage }) {
 		setExpanded(!expanded)
 	}
 
-	function handleHomeClick() {
-		window.dispatchEvent(new Event("resize")) // Clear any window resize event listeners
-		setPage(<Home random={random} setPage={setPage} />)
-	}
-
 	function handleRandomAlgorithmClick() {
-		setPage(random())
-	}
-
-	function handleBinarySearchClick() {
-		window.dispatchEvent(new Event("resize")) // Clear any window resize event listeners
-		setPage(<BinarySearch nums={generateSortedArray(9)} />)
-	}
-
-	function handleSelectionSortClick() {
-		window.dispatchEvent(new Event("resize")) // Clear any window resize event listeners
-		setPage(<SelectionSort num={9} />)
+		navigate(random())
 	}
 
 	function SidebarOptions() {
 		return (
-			// <div id="sidebar-options" className={expanded ? "" : "sidebar-hidden"}>
 			<div id="sidebar-options" style={{ display: expanded ? "flex" : "none" }}>
 				<p>tools</p>
-				<button className="sidebar-alg-button" onClick={handleHomeClick}>
+				<Link to="/" className="sidebar-alg-button">
 					home
-				</button>
+				</Link>
 				<button className="sidebar-alg-button" onClick={setColourScheme}>
 					randomize colours
 				</button>
@@ -77,12 +60,12 @@ function Sidebar({ random, setColourScheme, setPage }) {
 					random algorithm
 				</button>
 				<p>arrays</p>
-				<button className="sidebar-alg-button" onClick={handleBinarySearchClick}>
+				<Link to="/binary-search" className="sidebar-alg-button">
 					binary search
-				</button>
-				<button className="sidebar-alg-button" onClick={handleSelectionSortClick}>
+				</Link>
+				<Link to="/selection-sort" className="sidebar-alg-button">
 					selection sort
-				</button>
+				</Link>
 				<p>spanning trees</p>
 				<p>shortest paths</p>
 			</div>

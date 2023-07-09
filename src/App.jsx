@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
 import "./styles/App.css"
 import Sidebar from "./components/Sidebar"
+import { Routes, Route } from "react-router-dom"
 import Home from "./pages/Home"
-import BinarySearch, { generateSortedArray } from "./pages/BinarySearch"
+import BinarySearch from "./pages/BinarySearch"
+import SelectionSort from "./pages/SelectionSort"
 
 function setColourScheme() {
 	let root = document.querySelector(":root")
@@ -32,24 +34,35 @@ function setColourScheme() {
 
 function App() {
 	const [hasLoaded, setHasLoaded] = useState(false)
-	const [page, setPage] = useState()
 
+	const pages = [
+		{ path: "/binary-search", element: <BinarySearch /> },
+		{ path: "/selection-sort", element: <SelectionSort /> },
+	]
+
+	// Returns the path of a randomly chosen page
 	function random() {
-		return <BinarySearch nums={generateSortedArray(9)} />
+		return pages[Math.floor(Math.random() * pages.length)].path
 	}
 
 	useEffect(() => {
 		if (!hasLoaded) {
 			setHasLoaded(true)
 			setColourScheme()
-			setPage(<Home random={random} setPage={setPage} />)
 		}
 	}, [hasLoaded])
 
 	return (
 		<div id="app">
-			<Sidebar random={random} setColourScheme={setColourScheme} setPage={setPage} />
-			{page}
+			<Sidebar random={random} setColourScheme={setColourScheme} />
+			<Routes>
+				<Route path="/" element={<Home random={random} />} />
+				{(() => {
+					let routes = []
+					pages.forEach(page => routes.push(<Route path={page.path} element={page.element} />))
+					return routes
+				})()}
+			</Routes>
 		</div>
 	)
 }
