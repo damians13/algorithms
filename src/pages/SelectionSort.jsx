@@ -181,12 +181,24 @@ function SelectionSort() {
 			animatedMove("ss-b" + obj.index, leftPosition + "px", "0px", leftPosition + "px", "56px")
 
 			setTimeout(() => {
+				// Ensure both boxes are still present in the DOM before attempting to animate them
+				let leftBox = document.getElementById("ss-b" + minIndex)
+				let rightBox = document.getElementById("ss-b" + obj.index)
+				if (leftBox === null || rightBox === null) {
+					return
+				}
 				// Move right box to left box previous position
 				animatedMove("ss-b" + minIndex, rightPosition + "px", "-56px", leftPosition + "px", "-56px")
 				// Move left box to right box previous position
 				animatedMove("ss-b" + obj.index, leftPosition + "px", "56px", rightPosition + "px", "56px")
 
 				setTimeout(() => {
+					// Ensure both boxes are still present in the DOM before attempting to animate them
+					let leftBox = document.getElementById("ss-b" + minIndex)
+					let rightBox = document.getElementById("ss-b" + obj.index)
+					if (leftBox === null || rightBox === null) {
+						return
+					}
 					// Lower (old) right box to its new position
 					animatedMove("ss-b" + minIndex, leftPosition + "px", "-56px", leftPosition + "px", "0px")
 					// Raise (old) left box to its new position
@@ -294,7 +306,3 @@ private static int[] selectionSort(int[] array) {
 }
 
 export default SelectionSort
-
-/**
- * TODO: Fix bug where animations try to keep running after switching to another page
- */
