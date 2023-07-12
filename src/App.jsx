@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom"
 import Home from "./pages/Home"
 import BinarySearch from "./pages/BinarySearch"
 import SelectionSort from "./pages/SelectionSort"
+import InsertionSort from "./pages/InsertionSort"
 
 function setColourScheme() {
 	let root = document.querySelector(":root")
@@ -38,6 +39,7 @@ function App() {
 	const pages = [
 		{ path: "/binary-search", element: <BinarySearch /> },
 		{ path: "/selection-sort", element: <SelectionSort /> },
+		{ path: "/insertion-sort", element: <InsertionSort /> },
 	]
 
 	// Returns the path of a randomly chosen page

@@ -63,6 +63,9 @@ function Sidebar({ random, setColourScheme }) {
 				<Link to="/binary-search" className="sidebar-alg-button">
 					binary search
 				</Link>
+				<Link to="/insertion-sort" className="sidebar-alg-button">
+					insertion sort
+				</Link>
 				<Link to="/selection-sort" className="sidebar-alg-button">
 					selection sort
 				</Link>
