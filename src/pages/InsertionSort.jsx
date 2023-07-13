@@ -21,6 +21,7 @@ export class InsertionSortStateObject {
 
 		this.sortedUpToIndex = 0
 		this.gapIndex = 0
+		this.prevGapIndex = -1
 		this.isPickedUp = false
 		this.wasPickedUp = false
 		this.finished = false
@@ -50,6 +51,7 @@ export class InsertionSortStateObject {
 		let newObj = new InsertionSortStateObject(this.array)
 		newObj.sortedUpToIndex = this.sortedUpToIndex
 		newObj.gapIndex = this.gapIndex
+		newObj.prevGapIndex = this.gapIndex // Not a typo
 		newObj.isPickedUp = this.isPickedUp
 		newObj.wasPickedUp = this.wasPickedUp
 
@@ -96,6 +98,7 @@ function InsertionSort() {
 		if (animationPlaying) {
 			return
 		}
+		setObj(new InsertionSortStateObject(obj.array))
 		setAnimationPlaying(true)
 	}
 
@@ -132,6 +135,50 @@ function InsertionSort() {
 		// Trigger the initial box animation and update the state
 		handleResize()
 	}, [handleResize, num])
+
+	// Sorting animation
+	useEffect(() => {
+		if (!animationPlaying) {
+			handleResize()
+			return
+		}
+
+		let boxWidth = document.getElementById("is-b0").clientWidth
+		let gapPosition = (isBoxWidth / (obj.array.length + 1)) * (obj.gapIndex + 1) - boxWidth / 2
+
+		if (obj.isPickedUp && !obj.wasPickedUp) {
+			// Animate the pick up step
+			animatedMove("is-b" + obj.gapIndex, gapPosition + "px", "0px", gapPosition + "px", "-56px")
+		} else if (!obj.isPickedUp && obj.wasPickedUp) {
+			// Animate the put down step
+			animatedMove("is-b" + obj.gapIndex, gapPosition + "px", "-56px", gapPosition + "px", "0px")
+		} else if (obj.isPickedUp) {
+			// Animate the swap step
+			let swapPosition = (isBoxWidth / (obj.array.length + 1)) * (obj.gapIndex + 2) - boxWidth / 2
+
+			animatedMove("is-b" + (obj.gapIndex + 1), gapPosition + "px", "0px", swapPosition + "px", "0px")
+			animatedMove("is-b" + obj.gapIndex, swapPosition + "px", "-56px", gapPosition + "px", "-56px")
+		}
+
+		setTimeout(() => {
+			if (obj.finished) {
+				document.getElementById("is-b" + obj.prevGapIndex).classList.add("highlight")
+				setTimeout(() => {
+					setAnimationPlaying(false)
+					// Remove highlight from all boxes
+					for (let i = 0; i < obj.array.length; i++) {
+						document.getElementById("is-b" + i).classList.remove("highlight")
+					}
+				}, 500)
+			} else {
+				console.log(obj.prevSortedIndex)
+				if (obj.prevGapIndex >= 0 && obj.prevGapIndex < obj.gapIndex) {
+					document.getElementById("is-b" + obj.prevGapIndex).classList.add("highlight")
+				}
+				setObj(obj.step())
+			}
+		}, 500)
+	}, [animationPlaying, handleResize, isBoxWidth, obj])
 
 	return (
 		<div className="page">
