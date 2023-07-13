@@ -1,0 +1,48 @@
+#is-box {
+	width: 80%;
+}
+#is-buttons {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	justify-content: center;
+}
+.box {
+	transition: ease-in-out 0.2s;
+}
+.is-button {
+	height: 32px;
+	border-radius: 4px;
+	font-size: 24px;
+	margin: 8px;
+}
+#is-boxes {
+	display: flex;
+	position: relative;
+	width: 100%;
+	height: 48px;
+	margin-top: 64px;
+	margin-bottom: 64px;
+}
+.highlight {
+	background-color: var(--bright) !important;
+}
+ol {
+	margin: 0px;
+}
+li {
+	margin-bottom: 4px;
+}
+code {
+	font-size: 16px !important;
+}
+pre {
+	line-height: 0 !important;
+	padding: 4px !important;
+	margin: 0px !important;
+}
+.linenumber {
+	min-width: 32px !important;
+	text-align: center !important;
+	padding: 0px !important;
+}

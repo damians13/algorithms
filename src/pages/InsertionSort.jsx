@@ -1,3 +1,20 @@
+import { useCallback, useEffect, useState } from "react"
+import "../styles/InsertionSort.css"
+import Box, { animatedMove } from "../components/Box"
+
+function generateArray(num) {
+	let arr = []
+	for (let i = 0; i < num; i++) {
+		let num = Math.floor(Math.random() * 199) - 99
+		// Ensure no duplicates so that React keys are unique
+		while (arr.includes(num)) {
+			num = Math.floor(Math.random() * 199) - 99
+		}
+		arr.push(num)
+	}
+	return arr
+}
+
 export class InsertionSortStateObject {
 	constructor(array) {
 		this.array = array
@@ -68,6 +85,80 @@ export class InsertionSortStateObject {
 	}
 }
 
-function InsertionSort() {}
+function InsertionSort() {
+	const num = 9
+
+	const [isBoxWidth, setIsBoxWidth] = useState(0)
+	const [animationPlaying, setAnimationPlaying] = useState(false)
+	const [obj, setObj] = useState(new InsertionSortStateObject(generateArray(num)))
+
+	function handleSortClick() {
+		if (animationPlaying) {
+			return
+		}
+		setAnimationPlaying(true)
+	}
+
+	function handleRandomizeClick() {
+		if (animationPlaying) {
+			return
+		}
+		setObj(new InsertionSortStateObject(generateArray(num)))
+	}
+
+	/**
+	 * Create an event handler for window resize events
+	 * Created with a callback hook because bxBoxWidth will change each resize
+	 */
+	const handleResize = useCallback(() => {
+		let boxes = document.getElementById("is-boxes")
+		if (boxes === null) {
+			return
+		}
+		let newWidth = boxes.clientWidth
+		for (let i = 0; i < num; i++) {
+			let boxWidth = document.getElementById("is-b" + i).clientWidth
+			let newPosition = (newWidth / (num + 1)) * (i + 1) - boxWidth / 2
+			let oldPosition = (isBoxWidth / (num + 1)) * (i + 1) - boxWidth / 2
+			animatedMove("is-b" + i, oldPosition + "px", "0px", newPosition + "px", "0px")
+		}
+
+		setIsBoxWidth(newWidth)
+	}, [isBoxWidth, num])
+
+	// Setup window resize event listener
+	useEffect(() => {
+		window.addEventListener("resize", handleResize, { once: true })
+		// Trigger the initial box animation and update the state
+		handleResize()
+	}, [handleResize, num])
+
+	return (
+		<div className="page">
+			<div id="is-box" className="fg-box">
+				<p className="title-text">insertion sort</p>
+				<p className="title-description">O(n²) sorting algorithm</p>
+				<div id="is-buttons">
+					<button className="is-button button" onClick={handleSortClick}>
+						SORT
+					</button>
+					<button className="is-button button" onClick={handleRandomizeClick}>
+						RANDOMIZE
+					</button>
+				</div>
+				<div id="is-boxes">
+					{(() => {
+						let boxes = []
+						// Create a box for each number
+						for (let i = 0; i < num; i++) {
+							boxes.push(<Box text={obj.array[i]} id={"is-b" + i} key={"is-box" + obj.array[i]} />)
+						}
+						return boxes
+					})()}
+				</div>
+			</div>
+		</div>
+	)
+}
 
 export default InsertionSort
