@@ -1,3 +1,6 @@
+#sidebar-options > p {
+	transition: background-color 0.2s;
+}
 #sidebar-hamburger {
 	position: relative;
 	display: flex;
