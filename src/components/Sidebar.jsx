@@ -38,6 +38,19 @@ function Sidebar({ random, setColourScheme }) {
 		}
 	}, [expanded])
 
+	// Add mouseenter and mouseleave event listeners to sidebar
+	useEffect(() => {
+		let sidebarDiv = document.getElementById("sidebar")
+		sidebarDiv.addEventListener("mouseenter", () => {
+			setExpanded(true)
+			console.log("enter")
+		})
+		sidebarDiv.addEventListener("mouseleave", () => {
+			setExpanded(false)
+			console.log("leave")
+		})
+	}, [])
+
 	function handleExpandClick() {
 		setExpanded(!expanded)
 	}
