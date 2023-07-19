@@ -49,6 +49,9 @@
 	border-radius: 8px;
 	position: relative;
 }
+a.sidebar-alg-button {
+	padding-left: 6px;
+}
 .sidebar-alg-button {
 	font-family: var(--font);
 	font-size: large;
