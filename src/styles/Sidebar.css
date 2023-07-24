@@ -1,3 +1,6 @@
+#sidebar-options > p {
+	transition: background-color 0.2s;
+}
 #sidebar-hamburger {
 	position: relative;
 	display: flex;
@@ -48,6 +51,9 @@
 	margin: 4px 2px 2px 2px;
 	border-radius: 8px;
 	position: relative;
+}
+a.sidebar-alg-button {
+	padding-left: 6px;
 }
 .sidebar-alg-button {
 	font-family: var(--font);
