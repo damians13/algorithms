@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from "react"
 import "../styles/InsertionSort.css"
 import Box, { animatedMove } from "../components/Box"
+import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter"
+import java from "react-syntax-highlighter/dist/cjs/languages/prism/java"
+import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism"
 
 function generateArray(num) {
 	let arr = []
@@ -93,6 +96,8 @@ function InsertionSort() {
 	const [isBoxWidth, setIsBoxWidth] = useState(0)
 	const [animationPlaying, setAnimationPlaying] = useState(false)
 	const [obj, setObj] = useState(new InsertionSortStateObject(generateArray(num)))
+
+	SyntaxHighlighter.registerLanguage("java", java)
 
 	function handleSortClick() {
 		if (animationPlaying) {
@@ -202,6 +207,60 @@ function InsertionSort() {
 						}
 						return boxes
 					})()}
+				</div>
+			</div>
+			<div className="extra">
+				<div className="fg-box">
+					<p className="extra-box-text">Steps</p>
+					<div className="extra-box-children">
+						<ol type="1">
+							<li>
+								Moving down the array from left to right, keep track of the current element and call it <code>a</code>.
+							</li>
+							<li>Do the following for every element in the array:</li>
+							<ol type="a">
+								<li>
+									While <code>a</code> is not the leftmost element in the array, do:
+								</li>
+								<ol type="a">
+									<li>
+										Let <code>b</code> be <code>a</code>'s left neighbour.
+									</li>
+									<li>
+										If <code>a&lt;b</code>, swap <code>a</code> and <code>b</code>. Otherwise, exit the while loop.
+									</li>
+								</ol>
+							</ol>
+							<li>Return the sorted array.</li>
+						</ol>
+					</div>
+				</div>
+				<div className="fg-box">
+					<p className="extra-box-text">Code</p>
+					<div className="extra-box-children">
+						<SyntaxHighlighter language="java" style={tomorrow} showLineNumbers>
+							{`// This functions swaps the values at indices a and b
+// in the given array (modifies array).
+private static int[] swap(int[] array, int a, int b) {
+    int temp = array[a];
+    array[a] = array[b];
+    array[b] = temp;
+	return array;
+}
+
+// This function sorts the given array using the
+// insertion sort algorithm (modifies array).
+private static int[] insertionSort(int[] array) {
+    for (int i = 0; i < array.length; i++) {
+        int j = i;
+        while (j > 0 && array[j] < array[j - 1]) {
+            swap(array, j, j - 1);
+        }
+    }
+	return array;
+}`}
+						</SyntaxHighlighter>
+					</div>
 				</div>
 			</div>
 		</div>
