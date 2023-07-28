@@ -1,3 +1,10 @@
+import "../styles/BFS.css"
+import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter"
+import java from "react-syntax-highlighter/dist/cjs/languages/prism/java"
+import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism"
+import Box, { animatedMove } from "../components/Box"
+import { useEffect } from "react"
+
 /**
  * This class represents the state of the BFS algorithm and supports the associated animations
  */
@@ -114,6 +121,50 @@ export function generateConnectedGraph(num) {
 	return [vertices, edges]
 }
 
-function BFS() {}
+function BFS() {
+	SyntaxHighlighter.registerLanguage("java", java)
+
+	useEffect(() => {
+		for (let i = 0; i < 12; i++) {
+			animatedMove("bfs-b" + i, "30px", "30px", "30px", "30px")
+			console.log(i)
+		}
+	}, [])
+
+	return (
+		<div className="page">
+			<div id="bfs-box" className="fg-box">
+				<p className="title-text">breadth first search</p>
+				<p className="title-description">graph traversal algorithm</p>
+				<div id="bfs-boxes">
+					{(() => {
+						let boxes = []
+						for (let i = 0; i < 12; i++) {
+							boxes.push(<Box text={i} id={"bfs-b" + i} key={"bfs-box" + i} />)
+						}
+						return boxes
+					})()}
+				</div>
+			</div>
+			<div className="extra">
+				<div className="fg-box">
+					<p className="extra-box-text">Steps</p>
+					<div className="extra-box-children">
+						<ol type="1">
+							<li>step one</li>
+							<li>step 2</li>
+						</ol>
+					</div>
+				</div>
+				<div className="fg-box">
+					<p className="extra-box-text">Code</p>
+					<div className="extra-box-children">
+						<SyntaxHighlighter language="java" style={tomorrow} showLineNumbers>{`// Code goes here!`}</SyntaxHighlighter>
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}
 
 export default BFS
