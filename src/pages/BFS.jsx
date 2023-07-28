@@ -1,5 +1,3 @@
-const MAX_NUM = 12
-
 /**
  * This class represents the state of the BFS algorithm and supports the associated animations
  */
@@ -7,11 +5,79 @@ export class BFSStateObject {
 	constructor(vertices, edges) {
 		if (typeof vertices === "undefined" || typeof edges === "undefined") {
 			let num = Math.floor(Math.random() * 5 + 5)
-			const [vertices, edges] = generateConnectedGraph(num)
+			let [V, E] = generateConnectedGraph(num)
+			this.vertices = V
+			this.edges = E
+		} else {
+			this.vertices = vertices
+			this.edges = edges
 		}
-		this.vertices = vertices
-		this.edges = edges
+
+		// Populate adjacency lists
+		this.adjacencies = generateAdjacencyLists(this.vertices, this.edges)
+
+		this.visited = []
+		this.stack = []
+		this.finished = false
 	}
+
+	/**
+	 * This function clones and advances the current state of the BFSStateObject
+	 * @returns A clone of the current state, advanced one step if possible
+	 */
+	step() {
+		if (this.finished || this.stack.length === 0) {
+			return this
+		}
+
+		// Clone this object
+		let obj = new BFSStateObject(this.vertices, this.edges)
+		obj.visited = this.visited
+		obj.stack = this.stack
+
+		// Get the first node in the stack that has not been visited, if one exists
+		let node = obj.stack.pop()
+		while (node in obj.visited) {
+			node = obj.stack.pop()
+		}
+		if (node === undefined) {
+			// No more nodes in the stack, we have traversed the entire tree
+			obj.finished = true
+			return obj
+		}
+
+		// Mark this node as visited
+		obj.visited.push(node)
+
+		// Push node's neighbours on to the stack
+		let neighbours = obj.adjacencies[node - 1]
+		neighbours.forEach(n => {
+			obj.stack.push(n)
+		})
+
+		return obj
+	}
+}
+
+/**
+ * Generates adjaency lists for the input graph G = (V, E)
+ * @param {number[]} V the list of vertices in the graph
+ * @param {Object[]} E the list of edges in the graph
+ */
+export function generateAdjacencyLists(V, E) {
+	let adjacencies = []
+	for (let i = 1; i <= V.length; i++) {
+		let arr = []
+		E.forEach(edge => {
+			if (edge.to === i) {
+				arr.push(edge.from)
+			} else if (edge.from === i) {
+				arr.push(edge.to)
+			}
+		})
+		adjacencies.push(arr)
+	}
+	return adjacencies
 }
 
 /**
