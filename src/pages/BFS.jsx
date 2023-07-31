@@ -3,7 +3,7 @@ import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter"
 import java from "react-syntax-highlighter/dist/cjs/languages/prism/java"
 import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism"
 import Box, { animatedMove } from "../components/Box"
-import { useEffect } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 /**
  * This class represents the state of the BFS algorithm and supports the associated animations
@@ -98,23 +98,27 @@ export function generateConnectedGraph(num) {
 	let vertices = []
 	let edges = []
 	for (let i = 0; i < num; i++) {
-		vertices.push(i)
-		let desiredDegree = Math.floor(Math.random() * (num - 2) + 1)
+		let vertex = Math.floor(Math.random() * 12)
+		while (vertices.includes(vertex)) {
+			vertex = Math.floor(Math.random() * 12)
+		}
+		vertices.push(vertex)
+		let desiredDegree = Math.min(vertices.length - 1, Math.floor(Math.random() * (num - 2) + 1))
 		let numEdges = 0
 		// Count the number of edges that already go to i
 		edges.forEach(edge => {
-			if (edge.to === i) {
+			if (edge.to === vertex) {
 				numEdges++
 			}
 		})
 		// Add edges if current degree < desiredDegree
 		while (numEdges < desiredDegree) {
 			// Find a different vertex j which doesn't share an edge with i
-			let j = Math.floor(Math.random() * num)
-			while ({ from: i, to: j } in edges || j === i) {
-				j = Math.floor(Math.random() * num)
+			let j = Math.floor(Math.random() * vertices.length)
+			while (edges.includes({ from: vertex, to: vertices[j] }) || vertices[j] === vertex) {
+				j = Math.floor(Math.random() * vertices.length)
 			}
-			edges.push({ from: i, to: j })
+			edges.push({ from: vertex, to: vertices[j] })
 			numEdges++
 		}
 	}
@@ -124,11 +128,27 @@ export function generateConnectedGraph(num) {
 function BFS() {
 	SyntaxHighlighter.registerLanguage("java", java)
 
-	useEffect(() => {
-		for (let i = 0; i < 12; i++) {
-			animatedMove("bfs-b" + i, "30px", "30px", "30px", "30px")
-			console.log(i)
+	const [obj, setObj] = useState(new BFSStateObject())
+	const [bfsBoxWidth, setBFSBoxWidth] = useState(0)
+
+	const handleResize = useCallback(() => {
+		let boxes = document.getElementById("bfs-boxes")
+		if (boxes === null) {
+			return
 		}
+		let newWidth = boxes.clientWidth
+		for (let i = 0; i < 12; i++) {
+			if (i + 1 in obj.vertices) {
+				console.log(i + 1)
+			}
+		}
+	}, [bfsBoxWidth])
+
+	useEffect(() => {
+		// for (let i = 0; i < 12; i++) {
+		// 	animatedMove("bfs-b" + i, "30px", "30px", "30px", "30px")
+		// 	console.log(i)
+		// }
 	}, [])
 
 	return (
@@ -139,9 +159,9 @@ function BFS() {
 				<div id="bfs-boxes">
 					{(() => {
 						let boxes = []
-						for (let i = 0; i < 12; i++) {
-							boxes.push(<Box text={i} id={"bfs-b" + i} key={"bfs-box" + i} />)
-						}
+						obj.vertices.forEach(vertex => {
+							boxes.push(<Box text={vertex + 1} id={"bfs-b" + vertex} key={"bfs-box" + vertex} />)
+						})
 						return boxes
 					})()}
 				</div>

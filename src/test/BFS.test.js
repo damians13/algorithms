@@ -69,5 +69,10 @@ test("BFSStateObject constructor with no vertices", () => {
 
 		expect(obj.vertices.length).toBeGreaterThanOrEqual(4)
 		expect(obj.vertices.length).toBeLessThanOrEqual(9)
+
+		obj.vertices.forEach(vertex => {
+			expect(vertex).toBeGreaterThanOrEqual(0)
+			expect(vertex).toBeLessThan(12)
+		})
 	}
 })
