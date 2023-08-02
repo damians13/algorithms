@@ -1,10 +1,10 @@
 #bfs-box {
 	width: 80%;
+	height: 70%;
 }
 #bfs-boxes {
-	height: 270px;
-	width: 400px;
-	background-color: var(--mid);
+	height: 60%;
+	width: 40%;
 	margin: 0px 16px 16px 16px;
 }
 #bfs-extra {
@@ -13,6 +13,13 @@
 	justify-content: space-between;
 	max-height: 35%;
 	margin-left: 20px;
+}
+.box {
+	transition: ease-in-out 0.2s;
+}
+canvas {
+	width: 100%;
+	height: 100%;
 }
 ol {
 	margin: 0px;

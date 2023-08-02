@@ -44,7 +44,7 @@ export class BFSStateObject {
 
 		// Get the first node in the stack that has not been visited, if one exists
 		let node = obj.stack.pop()
-		while (node in obj.visited) {
+		while (obj.visited.includes(node)) {
 			node = obj.stack.pop()
 		}
 		if (node === undefined) {
@@ -131,25 +131,97 @@ function BFS() {
 	const [obj, setObj] = useState(new BFSStateObject())
 	const [bfsBoxWidth, setBFSBoxWidth] = useState(0)
 
-	const handleResize = useCallback(() => {
-		let boxes = document.getElementById("bfs-boxes")
-		if (boxes === null) {
-			return
-		}
-		let newWidth = boxes.clientWidth
-		for (let i = 0; i < 12; i++) {
-			if (i + 1 in obj.vertices) {
-				console.log(i + 1)
+	// Setup window resize event listener
+	useEffect(() => {
+		function handleResize() {
+			let boxes = document.getElementById("bfs-boxes")
+			if (boxes === null) {
+				return
 			}
+			let newWidth = boxes.clientWidth
+			setBFSBoxWidth(newWidth)
 		}
+		window.addEventListener("resize", handleResize, { once: true })
+		// Trigger the initial box animation and update the state
+		handleResize()
 	}, [bfsBoxWidth])
 
+	let determineNodePosition = useCallback(
+		i => {
+			let rect = document.getElementById("bfs-boxes").getBoundingClientRect()
+			let widthStep = bfsBoxWidth / 9 // Using bfsBoxWidth here to prompt a re-render when this value changes
+			let heightStep = rect.height / 9
+			let xOffset = rect.left
+			let yOffset = rect.top
+			let x, y
+
+			switch (i) {
+				case 0:
+					x = 3
+					y = 0
+					break
+				case 1:
+					x = 5
+					y = 0
+					break
+				case 2:
+					x = 7
+					y = 1
+					break
+				case 3:
+					x = 8
+					y = 3
+					break
+				case 4:
+					x = 8
+					y = 5
+					break
+				case 5:
+					x = 7
+					y = 7
+					break
+				case 6:
+					x = 5
+					y = 8
+					break
+				case 7:
+					x = 3
+					y = 8
+					break
+				case 8:
+					x = 1
+					y = 7
+					break
+				case 9:
+					x = 0
+					y = 5
+					break
+				case 10:
+					x = 0
+					y = 3
+					break
+				case 11:
+					x = 1
+					y = 1
+					break
+				default:
+					console.error("Unexpected index given: " + i)
+			}
+
+			return [x * widthStep + xOffset, y * heightStep + yOffset]
+		},
+		[bfsBoxWidth]
+	)
+
+	// Set up graph
 	useEffect(() => {
-		// for (let i = 0; i < 12; i++) {
-		// 	animatedMove("bfs-b" + i, "30px", "30px", "30px", "30px")
-		// 	console.log(i)
-		// }
-	}, [])
+		for (let i = 0; i < 12; i++) {
+			if (document.getElementById("bfs-b" + i)) {
+				let [x, y] = determineNodePosition(i)
+				animatedMove("bfs-b" + i, x + "px", y + "px", x + "px", y + "px")
+			}
+		}
+	}, [bfsBoxWidth, determineNodePosition])
 
 	return (
 		<div className="page">
@@ -157,6 +229,7 @@ function BFS() {
 				<p className="title-text">breadth first search</p>
 				<p className="title-description">graph traversal algorithm</p>
 				<div id="bfs-boxes">
+					<canvas>Your browser doesn't support the HTML canvas.</canvas>
 					{(() => {
 						let boxes = []
 						obj.vertices.forEach(vertex => {
