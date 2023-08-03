@@ -2,6 +2,32 @@
 	width: 80%;
 	height: 70%;
 }
+#bfs-content {
+	display: flex;
+}
+.bfs-adjacency-list {
+	display: flex;
+	height: 28px;
+	margin: 4px;
+	color: #ededed;
+}
+.bfs-adjacency-list > .box {
+	position: static;
+	margin: 4px;
+	min-width: 28px;
+	max-width: 28px;
+	min-height: 28px;
+	font-size: small;
+}
+.bfs-adjacency-list > p {
+	margin: 0px;
+	height: 28px;
+	user-select: none;
+}
+.bfs-adjacency-list > .box > p {
+	font-size: medium;
+	max-height: 28px;
+}
 #bfs-boxes {
 	height: 60%;
 	width: 40%;
@@ -13,6 +39,10 @@
 	justify-content: space-between;
 	max-height: 35%;
 	margin-left: 20px;
+}
+#bfs-adj-list-label {
+	color: #ededed;
+	margin: -52px 0px 0px 10px;
 }
 .box {
 	transition: ease-in-out 0.2s;

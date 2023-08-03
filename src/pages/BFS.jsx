@@ -69,13 +69,14 @@ export class BFSStateObject {
 /**
  * Generates adjaency lists for the input graph G = (V, E)
  * @param {number[]} V the list of vertices in the graph
- * @param {Object[]} E the list of edges in the graph
+ * @param {Object[]} E the set of edges in the graph
  */
 export function generateAdjacencyLists(V, E) {
 	let adjacencies = []
 	for (let i = 1; i <= V.length; i++) {
 		let arr = []
-		E.forEach(edge => {
+		E.forEach(e => {
+			let edge = JSON.parse(e)
 			if (edge.to === i) {
 				arr.push(edge.from)
 			} else if (edge.from === i) {
@@ -91,12 +92,13 @@ export function generateAdjacencyLists(V, E) {
  * This function generates a connected graph with num vertices.
  * Each vertex will be assigned a random degree between 1 and num-1.
  * @param {number} num the number of vertices to create in the graph
- * @returns {*} G represents the created graph, index 0 is the vertices array, index 1 is the edges array.
- * Each vertex is an integer, each edge is a object { from: int, to: int }.
+ * @returns {*} G represents the created graph returned as an array to allow dereferencing,
+ * where index 0 is the vertices array, and index 1 is the edge set.
+ * Each vertex is an integer, each edge is a JSON string { from: int, to: int }.
  */
 export function generateConnectedGraph(num) {
 	let vertices = []
-	let edges = []
+	let edges = new Set()
 	for (let i = 0; i < num; i++) {
 		let vertex = Math.floor(Math.random() * 12)
 		while (vertices.includes(vertex)) {
@@ -106,7 +108,8 @@ export function generateConnectedGraph(num) {
 		let desiredDegree = Math.min(vertices.length - 1, Math.floor(Math.random() * (num - 2) + 1))
 		let numEdges = 0
 		// Count the number of edges that already go to i
-		edges.forEach(edge => {
+		edges.forEach(e => {
+			let edge = JSON.parse(e)
 			if (edge.to === vertex) {
 				numEdges++
 			}
@@ -114,11 +117,11 @@ export function generateConnectedGraph(num) {
 		// Add edges if current degree < desiredDegree
 		while (numEdges < desiredDegree) {
 			// Find a different vertex j which doesn't share an edge with i
-			let j = Math.floor(Math.random() * vertices.length)
-			while (edges.includes({ from: vertex, to: vertices[j] }) || vertices[j] === vertex) {
-				j = Math.floor(Math.random() * vertices.length)
+			let j = vertices[Math.floor(Math.random() * vertices.length)]
+			while (j === vertex || edges.has(JSON.stringify({ from: vertex, to: j })) || edges.has(JSON.stringify({ from: j, to: vertex }))) {
+				j = vertices[Math.floor(Math.random() * vertices.length)]
 			}
-			edges.push({ from: vertex, to: vertices[j] })
+			edges.add(JSON.stringify({ from: vertex, to: j }))
 			numEdges++
 		}
 	}
@@ -129,30 +132,31 @@ function BFS() {
 	SyntaxHighlighter.registerLanguage("java", java)
 
 	const [obj, setObj] = useState(new BFSStateObject())
-	const [bfsBoxWidth, setBFSBoxWidth] = useState(0)
+	const [bfsBoxRect, setBFSBoxRect] = useState(null)
 
-	// Setup window resize event listener
+	// Setup window resize event listener and initialize bfsBoxWidth
 	useEffect(() => {
 		function handleResize() {
 			let boxes = document.getElementById("bfs-boxes")
 			if (boxes === null) {
 				return
 			}
-			let newWidth = boxes.clientWidth
-			setBFSBoxWidth(newWidth)
+			setBFSBoxRect(boxes.getBoundingClientRect())
 		}
-		window.addEventListener("resize", handleResize, { once: true })
+		window.addEventListener("resize", handleResize)
 		// Trigger the initial box animation and update the state
 		handleResize()
-	}, [bfsBoxWidth])
+	}, [])
 
 	let determineNodePosition = useCallback(
 		i => {
-			let rect = document.getElementById("bfs-boxes").getBoundingClientRect()
-			let widthStep = bfsBoxWidth / 9 // Using bfsBoxWidth here to prompt a re-render when this value changes
-			let heightStep = rect.height / 9
-			let xOffset = rect.left
-			let yOffset = rect.top
+			if (!bfsBoxRect) {
+				return [0, 0]
+			}
+			let widthStep = bfsBoxRect.width / 9
+			let heightStep = bfsBoxRect.height / 9
+			let xOffset = bfsBoxRect.left
+			let yOffset = bfsBoxRect.top
 			let x, y
 
 			switch (i) {
@@ -210,8 +214,26 @@ function BFS() {
 
 			return [x * widthStep + xOffset, y * heightStep + yOffset]
 		},
-		[bfsBoxWidth]
+		[bfsBoxRect]
 	)
+
+	let generateAdjacencyListElements = useCallback(() => {
+		return obj.vertices.map(vertex => (
+			<div className="bfs-adjacency-list">
+				<Box text={vertex + 1} key={"bfs-adj-src" + vertex} />
+				<p>:</p>
+				{[...obj.edges]
+					.filter(edge => JSON.parse(edge).to === vertex || JSON.parse(edge).from === vertex)
+					.map(edge =>
+						JSON.parse(edge).to === vertex ? (
+							<Box text={JSON.parse(edge).from + 1} key={`bfs-adjacency-node-${edge}-from`} />
+						) : (
+							<Box text={JSON.parse(edge).to + 1} key={`bfs-adjacency-node-${edge}-to`} />
+						)
+					)}
+			</div>
+		))
+	}, [obj])
 
 	// Set up graph
 	useEffect(() => {
@@ -221,22 +243,22 @@ function BFS() {
 				animatedMove("bfs-b" + i, x + "px", y + "px", x + "px", y + "px")
 			}
 		}
-	}, [bfsBoxWidth, determineNodePosition])
+	}, [bfsBoxRect, determineNodePosition])
 
 	return (
 		<div className="page">
 			<div id="bfs-box" className="fg-box">
 				<p className="title-text">breadth first search</p>
 				<p className="title-description">graph traversal algorithm</p>
-				<div id="bfs-boxes">
-					<canvas>Your browser doesn't support the HTML canvas.</canvas>
-					{(() => {
-						let boxes = []
-						obj.vertices.forEach(vertex => {
-							boxes.push(<Box text={vertex + 1} id={"bfs-b" + vertex} key={"bfs-box" + vertex} />)
-						})
-						return boxes
-					})()}
+				<div id="bfs-content">
+					<div id="bfs-boxes">
+						<canvas>Your browser doesn't support the HTML canvas.</canvas>
+						{(() => obj.vertices.map(vertex => <Box text={vertex + 1} id={"bfs-b" + vertex} key={"bfs-box" + vertex} />))()}
+					</div>
+					<div id="bfs-adjacency-list">
+						<p id="bfs-adj-list-label">Adjacency lists:</p>
+						{generateAdjacencyListElements()}
+					</div>
 				</div>
 			</div>
 			<div className="extra">
