@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from "react"
 export class BFSStateObject {
 	constructor(vertices, edges) {
 		if (typeof vertices === "undefined" || typeof edges === "undefined") {
-			let num = Math.floor(Math.random() * 5 + 5)
+			let num = Math.floor(Math.random() * 3 + 5)
 			let [V, E] = generateConnectedGraph(num)
 			this.vertices = V
 			this.edges = E
@@ -105,7 +105,7 @@ export function generateConnectedGraph(num) {
 			vertex = Math.floor(Math.random() * 12)
 		}
 		vertices.push(vertex)
-		let desiredDegree = Math.min(vertices.length - 1, Math.floor(Math.random() * (num - 2) + 1))
+		let desiredDegree = Math.min(vertices.length - 1, Math.floor(Math.random() * (num - 5) + 1))
 		let numEdges = 0
 		// Count the number of edges that already go to i
 		edges.forEach(e => {
@@ -121,7 +121,7 @@ export function generateConnectedGraph(num) {
 			while (j === vertex || edges.has(JSON.stringify({ from: vertex, to: j })) || edges.has(JSON.stringify({ from: j, to: vertex }))) {
 				j = vertices[Math.floor(Math.random() * vertices.length)]
 			}
-			edges.add(JSON.stringify({ from: vertex, to: j }))
+			edges.add(JSON.stringify({ from: vertex, to: j, highlight: false }))
 			numEdges++
 		}
 	}
@@ -243,7 +243,38 @@ function BFS() {
 				animatedMove("bfs-b" + i, x + "px", y + "px", x + "px", y + "px")
 			}
 		}
-	}, [bfsBoxRect, determineNodePosition])
+
+		let canvas = document.getElementById("bfs-edge-canvas")
+		let r = canvas.getBoundingClientRect()
+		canvas.width = 2 * r.width
+		canvas.height = 2 * r.height
+		let ctx = canvas.getContext("2d", { alpha: false })
+		ctx.lineWidth = 8
+		ctx.fillStyle = "#333333"
+		ctx.clearRect(0, 0, 2 * canvas.clientWidth, 2 * canvas.clientHeight)
+		ctx.fillRect(0, 0, 2 * canvas.clientWidth, 2 * canvas.clientHeight)
+		obj.edges.forEach(e => {
+			let edge = JSON.parse(e)
+			ctx.strokeStyle = edge.highlight ? window.getComputedStyle(document.querySelector(":root")).getPropertyValue("--bright") : "#1e1e1e"
+			let [x1, y1] = determineNodePosition(edge.from)
+			let [x2, y2] = determineNodePosition(edge.to)
+			x1 = x1 - r.left + 24
+			x2 = x2 - r.left + 24
+			y1 = y1 - r.top + 24
+			y2 = y2 - r.top + 24
+			ctx.moveTo(Math.floor(2 * x1), Math.floor(2 * y1))
+			ctx.lineTo(Math.floor(2 * x2), Math.floor(2 * y2))
+			ctx.stroke()
+		})
+	}, [bfsBoxRect, determineNodePosition, obj.edges])
+
+	function handleGoClick() {
+		console.log("Start your engines!")
+	}
+
+	function handleRandomizeClick() {
+		setObj(new BFSStateObject())
+	}
 
 	return (
 		<div className="page">
@@ -252,8 +283,18 @@ function BFS() {
 				<p className="title-description">graph traversal algorithm</p>
 				<div id="bfs-content">
 					<div id="bfs-boxes">
-						<canvas>Your browser doesn't support the HTML canvas.</canvas>
+						<canvas id="bfs-edge-canvas">Your browser doesn't support the HTML canvas.</canvas>
 						{(() => obj.vertices.map(vertex => <Box text={vertex + 1} id={"bfs-b" + vertex} key={"bfs-box" + vertex} />))()}
+					</div>
+					<div id="bfs-buttons">
+						<label htmlFor="bfs-start-number">Start from</label>
+						<input type="number" min="1" max="12" name="bfs-start-number" />
+						<button className="button bfs-button" onClick={handleGoClick}>
+							GO
+						</button>
+						<button className="button bfs-button" onClick={handleRandomizeClick}>
+							RANDOMIZE
+						</button>
 					</div>
 					<div id="bfs-adjacency-list">
 						<p id="bfs-adj-list-label">Adjacency lists:</p>
