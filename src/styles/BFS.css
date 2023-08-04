@@ -5,6 +5,12 @@
 #bfs-content {
 	display: flex;
 }
+.highlight {
+	background-color: var(--bright) !important;
+}
+.midlight {
+	background-color: var(--dark) !important;
+}
 .bfs-adjacency-list {
 	display: flex;
 	height: 28px;

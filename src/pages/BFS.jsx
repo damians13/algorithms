@@ -21,10 +21,10 @@ export class BFSStateObject {
 		}
 
 		// Populate adjacency lists
-		this.adjacencies = generateAdjacencyLists(this.vertices, this.edges)
+		this.adjacencies = generateAdjacencyLists(this.edges)
 
 		this.visited = []
-		this.stack = []
+		this.queue = []
 		this.finished = false
 	}
 
@@ -33,22 +33,22 @@ export class BFSStateObject {
 	 * @returns A clone of the current state, advanced one step if possible
 	 */
 	step() {
-		if (this.finished || this.stack.length === 0) {
+		if (this.finished || this.queue.length === 0) {
 			return this
 		}
 
 		// Clone this object
 		let obj = new BFSStateObject(this.vertices, this.edges)
 		obj.visited = this.visited
-		obj.stack = this.stack
+		obj.queue = this.queue
 
-		// Get the first node in the stack that has not been visited, if one exists
-		let node = obj.stack.pop()
+		// Get the first node in the queue that has not been visited, if one exists
+		let node = obj.queue.shift()
 		while (obj.visited.includes(node)) {
-			node = obj.stack.pop()
+			node = obj.queue.shift()
 		}
 		if (node === undefined) {
-			// No more nodes in the stack, we have traversed the entire tree
+			// No more nodes in the queue, we have traversed the entire tree
 			obj.finished = true
 			return obj
 		}
@@ -56,10 +56,10 @@ export class BFSStateObject {
 		// Mark this node as visited
 		obj.visited.push(node)
 
-		// Push node's neighbours on to the stack
-		let neighbours = obj.adjacencies[node - 1]
+		// Push node's neighbours on to the queue
+		let neighbours = obj.adjacencies[node]
 		neighbours.forEach(n => {
-			obj.stack.push(n)
+			obj.queue.push(n)
 		})
 
 		return obj
@@ -68,12 +68,11 @@ export class BFSStateObject {
 
 /**
  * Generates adjaency lists for the input graph G = (V, E)
- * @param {number[]} V the list of vertices in the graph
  * @param {Object[]} E the set of edges in the graph
  */
-export function generateAdjacencyLists(V, E) {
+export function generateAdjacencyLists(E) {
 	let adjacencies = []
-	for (let i = 1; i <= V.length; i++) {
+	for (let i = 0; i < 12; i++) {
 		let arr = []
 		E.forEach(e => {
 			let edge = JSON.parse(e)
@@ -133,6 +132,7 @@ function BFS() {
 
 	const [obj, setObj] = useState(new BFSStateObject())
 	const [bfsBoxRect, setBFSBoxRect] = useState(null)
+	const [animationPlaying, setAnimationPlaying] = useState(false)
 
 	// Setup window resize event listener and initialize bfsBoxWidth
 	useEffect(() => {
@@ -268,12 +268,54 @@ function BFS() {
 		})
 	}, [bfsBoxRect, determineNodePosition, obj.edges])
 
+	// Handle the animation
+	useEffect(() => {
+		if (!animationPlaying) {
+			return
+		}
+		let justVisited = obj.visited[obj.visited.length - 1]
+		let justVisitedEl = document.getElementById("bfs-b" + justVisited)
+		if (justVisitedEl) {
+			if (justVisitedEl.classList.contains("midlight")) {
+				justVisitedEl.classList.remove("midlight")
+			}
+			justVisitedEl.classList.add("highlight")
+		}
+
+		obj.queue.forEach(e => {
+			let el = document.getElementById("bfs-b" + e)
+			if (!el.classList.contains("midlight") && !el.classList.contains("highlight")) {
+				el.classList.add("midlight")
+			}
+		})
+
+		if (obj.finished) {
+			setAnimationPlaying(false)
+			let highlighted = [...document.querySelectorAll(".highlight")]
+			highlighted.forEach(e => e.classList.remove("highlight"))
+		} else {
+			setTimeout(() => setObj(obj.step()), 1000)
+		}
+	}, [animationPlaying, obj])
+
 	function handleGoClick() {
-		console.log("Start your engines!")
+		if (animationPlaying) {
+			return
+		}
+		let n = document.getElementById("bfs-start-num").value - 1
+		if (obj.vertices.includes(n)) {
+			obj.queue.push(n)
+			setAnimationPlaying(true)
+			let newObj = new BFSStateObject(obj.vertices, obj.edges)
+			newObj.queue.push(n)
+			setObj(newObj.step())
+		}
 	}
 
 	function handleRandomizeClick() {
-		setObj(new BFSStateObject())
+		if (!animationPlaying) {
+			setObj(new BFSStateObject())
+		}
 	}
 
 	return (
@@ -288,7 +330,7 @@ function BFS() {
 					</div>
 					<div id="bfs-buttons">
 						<label htmlFor="bfs-start-number">Start from</label>
-						<input type="number" min="1" max="12" name="bfs-start-number" />
+						<input id="bfs-start-num" type="number" min="1" max="12" name="bfs-start-number" />
 						<button className="button bfs-button" onClick={handleGoClick}>
 							GO
 						</button>
