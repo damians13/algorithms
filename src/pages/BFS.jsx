@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from "react"
 export class BFSStateObject {
 	constructor(vertices, edges) {
 		if (typeof vertices === "undefined" || typeof edges === "undefined") {
-			let num = Math.floor(Math.random() * 3 + 5)
+			let num = Math.floor(Math.random() * 3 + 7)
 			let [V, E] = generateConnectedGraph(num)
 			this.vertices = V
 			this.edges = E
@@ -25,6 +25,8 @@ export class BFSStateObject {
 
 		this.visited = []
 		this.queue = []
+		this.enqueuedList = []
+		this.enqueuedBy = -1
 		this.finished = false
 	}
 
@@ -41,11 +43,15 @@ export class BFSStateObject {
 		let obj = new BFSStateObject(this.vertices, this.edges)
 		obj.visited = this.visited
 		obj.queue = this.queue
+		obj.enqueuedList = this.enqueuedList
+		obj.enqueuedBy = this.enqueuedBy
 
 		// Get the first node in the queue that has not been visited, if one exists
 		let node = obj.queue.shift()
+		obj.enqueuedBy = obj.enqueuedList.shift()
 		while (obj.visited.includes(node)) {
 			node = obj.queue.shift()
+			obj.enqueuedBy = obj.enqueuedList.shift()
 		}
 		if (node === undefined) {
 			// No more nodes in the queue, we have traversed the entire tree
@@ -60,6 +66,7 @@ export class BFSStateObject {
 		let neighbours = obj.adjacencies[node]
 		neighbours.forEach(n => {
 			obj.queue.push(n)
+			obj.enqueuedList.push(node)
 		})
 
 		return obj
@@ -104,7 +111,7 @@ export function generateConnectedGraph(num) {
 			vertex = Math.floor(Math.random() * 12)
 		}
 		vertices.push(vertex)
-		let desiredDegree = Math.min(vertices.length - 1, Math.floor(Math.random() * (num - 5) + 1))
+		let desiredDegree = Math.min(vertices.length - 1, Math.floor(Math.random() * (num - 3) + 1))
 		let numEdges = 0
 		// Count the number of edges that already go to i
 		edges.forEach(e => {
@@ -220,30 +227,22 @@ function BFS() {
 	let generateAdjacencyListElements = useCallback(() => {
 		return obj.vertices.map(vertex => (
 			<div className="bfs-adjacency-list">
-				<Box text={vertex + 1} key={"bfs-adj-src" + vertex} />
+				<Box text={vertex + 1} key={"bfs-adj-src" + vertex} id={`bfs-adjacency-node-${vertex}`} />
 				<p>:</p>
 				{[...obj.edges]
 					.filter(edge => JSON.parse(edge).to === vertex || JSON.parse(edge).from === vertex)
 					.map(edge =>
 						JSON.parse(edge).to === vertex ? (
-							<Box text={JSON.parse(edge).from + 1} key={`bfs-adjacency-node-${edge}-from`} />
+							<Box text={JSON.parse(edge).from + 1} key={`bfs-adjacency-node-${edge}-from`} id={`bfs-adjacency-node-${vertex}-${JSON.parse(edge).from}`} />
 						) : (
-							<Box text={JSON.parse(edge).to + 1} key={`bfs-adjacency-node-${edge}-to`} />
+							<Box text={JSON.parse(edge).to + 1} key={`bfs-adjacency-node-${edge}-to`} id={`bfs-adjacency-node-${vertex}-${JSON.parse(edge).to}`} />
 						)
 					)}
 			</div>
 		))
 	}, [obj])
 
-	// Set up graph
-	useEffect(() => {
-		for (let i = 0; i < 12; i++) {
-			if (document.getElementById("bfs-b" + i)) {
-				let [x, y] = determineNodePosition(i)
-				animatedMove("bfs-b" + i, x + "px", y + "px", x + "px", y + "px")
-			}
-		}
-
+	let canvasDraw = useCallback(() => {
 		let canvas = document.getElementById("bfs-edge-canvas")
 		let r = canvas.getBoundingClientRect()
 		canvas.width = 2 * r.width
@@ -255,18 +254,31 @@ function BFS() {
 		ctx.fillRect(0, 0, 2 * canvas.clientWidth, 2 * canvas.clientHeight)
 		obj.edges.forEach(e => {
 			let edge = JSON.parse(e)
-			ctx.strokeStyle = edge.highlight ? window.getComputedStyle(document.querySelector(":root")).getPropertyValue("--bright") : "#1e1e1e"
+			ctx.strokeStyle = edge.highlight ? window.getComputedStyle(document.querySelector(":root")).getPropertyValue("--mid") : "#1e1e1e"
 			let [x1, y1] = determineNodePosition(edge.from)
 			let [x2, y2] = determineNodePosition(edge.to)
 			x1 = x1 - r.left + 24
 			x2 = x2 - r.left + 24
 			y1 = y1 - r.top + 24
 			y2 = y2 - r.top + 24
+			ctx.beginPath()
 			ctx.moveTo(Math.floor(2 * x1), Math.floor(2 * y1))
 			ctx.lineTo(Math.floor(2 * x2), Math.floor(2 * y2))
 			ctx.stroke()
 		})
-	}, [bfsBoxRect, determineNodePosition, obj.edges])
+	}, [determineNodePosition, obj])
+
+	// Set up graph
+	useEffect(() => {
+		for (let i = 0; i < 12; i++) {
+			if (document.getElementById("bfs-b" + i)) {
+				let [x, y] = determineNodePosition(i)
+				animatedMove("bfs-b" + i, x + "px", y + "px", x + "px", y + "px")
+			}
+		}
+
+		canvasDraw()
+	}, [bfsBoxRect, canvasDraw, determineNodePosition])
 
 	// Handle the animation
 	useEffect(() => {
@@ -281,6 +293,41 @@ function BFS() {
 			}
 			justVisitedEl.classList.add("highlight")
 		}
+		let adjNode = document.getElementById("bfs-adjacency-node-" + justVisited)
+		if (adjNode) {
+			adjNode.classList.add("highlight")
+			// Save this for DFS implementation later:
+			// if (obj.visited.length >= 2) {
+			// 	let prevVisited = obj.visited[obj.visited.length - 2]
+			// 	let adjPrevNode = document.getElementById(`bfs-adjacency-node-${prevVisited}-${justVisited}`)
+			// 	if (adjPrevNode) {
+			// 		adjPrevNode.classList.add("midlight")
+			// 	}
+			// }
+			if (obj.enqueuedBy && obj.enqueuedBy !== -1) {
+				// Highlight connecting edge
+				obj.edges.delete(
+					JSON.stringify({
+						from: obj.enqueuedBy,
+						to: justVisited,
+						highlight: false,
+					})
+				)
+				obj.edges.add(
+					JSON.stringify({
+						from: obj.enqueuedBy,
+						to: justVisited,
+						highlight: true,
+					})
+				)
+				canvasDraw()
+				// Highlight corresponding edge representation in adjacency lists
+				let enqueuedByEl = document.getElementById(`bfs-adjacency-node-${obj.enqueuedBy}-${justVisited}`)
+				if (enqueuedByEl) {
+					enqueuedByEl.classList.add("highlight")
+				}
+			}
+		}
 
 		obj.queue.forEach(e => {
 			let el = document.getElementById("bfs-b" + e)
@@ -293,10 +340,22 @@ function BFS() {
 			setAnimationPlaying(false)
 			let highlighted = [...document.querySelectorAll(".highlight")]
 			highlighted.forEach(e => e.classList.remove("highlight"))
+			let midlighted = [...document.querySelectorAll(".midlight")]
+			midlighted.forEach(e => e.classList.remove("midlight"))
+			obj.edges.forEach(e => {
+				let edge = JSON.parse(e)
+				if (edge.highlight) {
+					let newEdge = edge
+					newEdge.highlight = false
+					obj.edges.delete(JSON.stringify(edge))
+					obj.edges.add(JSON.stringify(newEdge))
+				}
+			})
+			canvasDraw()
 		} else {
 			setTimeout(() => setObj(obj.step()), 1000)
 		}
-	}, [animationPlaying, obj])
+	}, [animationPlaying, canvasDraw, obj])
 
 	function handleGoClick() {
 		if (animationPlaying) {
@@ -308,6 +367,7 @@ function BFS() {
 			setAnimationPlaying(true)
 			let newObj = new BFSStateObject(obj.vertices, obj.edges)
 			newObj.queue.push(n)
+			newObj.enqueuedList.push(-1)
 			setObj(newObj.step())
 		}
 	}

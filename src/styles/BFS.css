@@ -9,7 +9,7 @@
 	background-color: var(--bright) !important;
 }
 .midlight {
-	background-color: var(--dark) !important;
+	background-color: var(--mid) !important;
 }
 .bfs-adjacency-list {
 	display: flex;

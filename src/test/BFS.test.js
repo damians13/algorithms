@@ -91,30 +91,42 @@ test("Step through BFS execution", () => {
 	])
 	let obj = new BFSStateObject([1, 2, 3, 4, 5], edgeSet)
 	obj.queue.push(1) // Start from 1
+	obj.enqueuedList.push(-1) // Signal that 1 is the start of the traversal
 
 	obj = obj.step()
 	expect(obj.queue).toStrictEqual([2, 3])
 	expect(obj.visited).toStrictEqual([1])
+	expect(obj.enqueuedList).toStrictEqual([1, 1])
+	expect(obj.enqueuedBy).toBe(-1)
 
 	obj = obj.step()
 	expect(obj.queue).toStrictEqual([3, 1, 3, 4])
 	expect(obj.visited).toStrictEqual([1, 2])
+	expect(obj.enqueuedList).toStrictEqual([1, 2, 2, 2])
+	expect(obj.enqueuedBy).toBe(1)
 
 	obj = obj.step()
 	expect(obj.queue).toStrictEqual([1, 3, 4, 1, 2, 5])
 	expect(obj.visited).toStrictEqual([1, 2, 3])
+	expect(obj.enqueuedList).toStrictEqual([2, 2, 2, 3, 3, 3])
+	expect(obj.enqueuedBy).toBe(1)
 
 	obj = obj.step()
 	expect(obj.queue).toStrictEqual([1, 2, 5, 2])
 	expect(obj.visited).toStrictEqual([1, 2, 3, 4])
+	expect(obj.enqueuedList).toStrictEqual([3, 3, 3, 4])
+	expect(obj.enqueuedBy).toBe(2)
 
 	obj = obj.step()
 	expect(obj.queue).toStrictEqual([2, 3])
 	expect(obj.visited).toStrictEqual([1, 2, 3, 4, 5])
+	expect(obj.enqueuedList).toStrictEqual([4, 5])
+	expect(obj.enqueuedBy).toBe(3)
 	expect(obj.finished).toBe(false)
 
 	obj = obj.step()
 	expect(obj.queue).toStrictEqual([])
 	expect(obj.visited).toStrictEqual([1, 2, 3, 4, 5])
+	expect(obj.enqueuedList).toStrictEqual([])
 	expect(obj.finished).toBe(true)
 })
