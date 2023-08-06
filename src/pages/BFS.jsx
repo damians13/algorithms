@@ -169,8 +169,6 @@ function BFS() {
 			}
 			let widthStep = bfsBoxRect.width / 9
 			let heightStep = bfsBoxRect.height / 9
-			let xOffset = bfsBoxRect.left
-			let yOffset = bfsBoxRect.top
 			let x, y
 
 			switch (i) {
@@ -226,7 +224,7 @@ function BFS() {
 					console.error("Unexpected index given: " + i)
 			}
 
-			return [x * widthStep + xOffset, y * heightStep + yOffset]
+			return [x * widthStep, y * heightStep]
 		},
 		[bfsBoxRect]
 	)
@@ -264,10 +262,10 @@ function BFS() {
 			ctx.strokeStyle = obj.edges.get(edgeStr) ? window.getComputedStyle(document.querySelector(":root")).getPropertyValue("--mid") : "#1e1e1e"
 			let [x1, y1] = determineNodePosition(edge.from)
 			let [x2, y2] = determineNodePosition(edge.to)
-			x1 = x1 - r.left + 24
-			x2 = x2 - r.left + 24
-			y1 = y1 - r.top + 24
-			y2 = y2 - r.top + 24
+			x1 = x1 + 24
+			x2 = x2 + 24
+			y1 = y1 + 24
+			y2 = y2 + 24
 			ctx.beginPath()
 			ctx.moveTo(Math.floor(2 * x1), Math.floor(2 * y1))
 			ctx.lineTo(Math.floor(2 * x2), Math.floor(2 * y2))

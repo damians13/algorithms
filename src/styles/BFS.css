@@ -4,12 +4,18 @@
 }
 #bfs-content {
 	display: flex;
+	width: 100%;
+	height: 70%;
 }
 .highlight {
 	background-color: var(--bright) !important;
 }
 .midlight {
 	background-color: var(--mid) !important;
+}
+#bfs-adjacency-list {
+	width: 40%;
+	height: 100%;
 }
 .bfs-adjacency-list {
 	display: flex;
@@ -35,9 +41,13 @@
 	max-height: 28px;
 }
 #bfs-boxes {
-	height: 60%;
+	height: 80%;
 	width: 40%;
 	margin: 0px 16px 16px 16px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 #bfs-extra {
 	display: flex;
