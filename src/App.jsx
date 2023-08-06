@@ -7,6 +7,7 @@ import BinarySearch from "./pages/BinarySearch"
 import SelectionSort from "./pages/SelectionSort"
 import InsertionSort from "./pages/InsertionSort"
 import BFS from "./pages/BFS"
+import DFS from "./pages/DFS"
 
 function setColourScheme() {
 	let root = document.querySelector(":root")
@@ -42,6 +43,7 @@ function App() {
 		{ path: "/selection-sort", element: <SelectionSort /> },
 		{ path: "/insertion-sort", element: <InsertionSort /> },
 		{ path: "/breadth-first-search", element: <BFS /> },
+		{ path: "/depth-first-search", element: <DFS /> },
 	]
 
 	// Returns the path of a randomly chosen page

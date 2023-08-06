@@ -80,11 +80,13 @@ function Sidebar({ random, setColourScheme }) {
 				<Link to="/selection-sort" className="sidebar-alg-button">
 					selection sort
 				</Link>
-				<p>spanning trees</p>
+				<p>graphs</p>
 				<Link to="/breadth-first-search" className="sidebar-alg-button">
 					breadth first search
 				</Link>
-				<p>shortest paths</p>
+				<Link to="/depth-first-search" className="sidebar-alg-button">
+					depth first search
+				</Link>
 			</div>
 		)
 	}
