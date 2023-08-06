@@ -1,11 +1,14 @@
 #bfs-box {
 	width: 80%;
-	height: 70%;
+	height: 60%;
+	overflow-y: scroll;
 }
 #bfs-content {
 	display: flex;
 	width: 100%;
 	height: 70%;
+	max-height: 70%;
+	min-height: 70%;
 }
 .highlight {
 	background-color: var(--bright) !important;
@@ -16,6 +19,7 @@
 #bfs-adjacency-list {
 	width: 40%;
 	height: 100%;
+	padding-bottom: 8px;
 }
 .bfs-adjacency-list {
 	display: flex;
@@ -53,7 +57,7 @@
 	display: flex;
 	width: 80%;
 	justify-content: space-between;
-	max-height: 35%;
+	max-height: 30%;
 	margin-left: 20px;
 }
 #bfs-adj-list-label {

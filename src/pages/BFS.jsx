@@ -325,7 +325,7 @@ function BFS() {
 				// Highlight corresponding edge representation in adjacency lists
 				let enqueuedByEl = document.getElementById(`bfs-adjacency-node-${obj.enqueuedBy}-${justVisited}`)
 				if (enqueuedByEl) {
-					enqueuedByEl.classList.add("highlight")
+					enqueuedByEl.classList.add("midlight")
 				}
 			}
 		}
@@ -405,20 +405,62 @@ function BFS() {
 					</div>
 				</div>
 			</div>
-			<div className="extra">
+			<div id="bfs-extra" className="extra">
 				<div className="fg-box">
 					<p className="extra-box-text">Steps</p>
 					<div className="extra-box-children">
 						<ol type="1">
-							<li>step one</li>
-							<li>step 2</li>
+							<li>
+								Create a queue called <code>Q</code> to keep track of vertices encountered during the traversal
+							</li>
+							<li>
+								Create a list called <code>visited</code> to keep track of which vertices have been visited
+							</li>
+							<li>
+								Enqueue the starting vertex in <code>Q</code>
+							</li>
+							<li>
+								While <code>Q</code> is not empty, do the following:
+							</li>
+							<ol type="a">
+								<li>
+									Remove the first element from the front of <code>Q</code> (dequeue) and call it <code>v</code>
+								</li>
+								<li>
+									If <code>v</code> is in <code>visited</code>, then skip to the next iteration of the loop
+								</li>
+								<li>
+									Otherwise, add <code>v</code> to <code>visited</code> and add each neighbour <code>x</code> to <code>Q</code> (enqueue)
+								</li>
+							</ol>
+							<li>Every vertex in the graph has now been visited</li>
 						</ol>
 					</div>
 				</div>
 				<div className="fg-box">
 					<p className="extra-box-text">Code</p>
 					<div className="extra-box-children">
-						<SyntaxHighlighter language="java" style={tomorrow} showLineNumbers>{`// Code goes here!`}</SyntaxHighlighter>
+						<SyntaxHighlighter language="java" style={tomorrow} showLineNumbers>{`private static void breadthFirstSearch(List<Integer> vertices,
+	Map<Integer, List<Integer>> adjacencies) {
+    // Create q and visited
+    Queue<Integer> q = new LinkedList<>();
+    List<Integer> visited = new ArrayList<>();
+    
+    // Enqueue starting node
+    q.add(vertices.remove(0));
+    
+    // Loop
+    while (!q.isEmpty()) {
+        int v = q.remove(); // Dequeue
+        if (!visited.contains(v)) {
+            System.out.println(v);
+            visited.add(v); // Mark v as visited
+            for (int x : adjacencies.get(v)) {
+                q.add(x); // Enqueue
+            }
+        }
+    }
+}`}</SyntaxHighlighter>
 					</div>
 				</div>
 			</div>
