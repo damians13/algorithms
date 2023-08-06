@@ -81,14 +81,14 @@ export function generateAdjacencyLists(E) {
 	let adjacencies = []
 	for (let i = 0; i < 12; i++) {
 		let arr = []
-		E.forEach(e => {
-			let edge = JSON.parse(e)
+		for (let edgeStr of E.keys()) {
+			let edge = JSON.parse(edgeStr)
 			if (edge.to === i) {
 				arr.push(edge.from)
 			} else if (edge.from === i) {
 				arr.push(edge.to)
 			}
-		})
+		}
 		adjacencies.push(arr)
 	}
 	return adjacencies
@@ -99,35 +99,42 @@ export function generateAdjacencyLists(E) {
  * Each vertex will be assigned a random degree between 1 and num-1.
  * @param {number} num the number of vertices to create in the graph
  * @returns {*} G represents the created graph returned as an array to allow dereferencing,
- * where index 0 is the vertices array, and index 1 is the edge set.
- * Each vertex is an integer, each edge is a JSON string { from: int, to: int }.
+ * where index 0 is the vertices array, and index 1 is the edge map.
+ * Each vertex is an integer, each edge is a JSON string { from: int, to: int } mapped to a boolean
+ * used to represent whether that edge should be highlighted in the animation.
  */
 export function generateConnectedGraph(num) {
 	let vertices = []
-	let edges = new Set()
+	let edges = new Map()
 	for (let i = 0; i < num; i++) {
 		let vertex = Math.floor(Math.random() * 12)
 		while (vertices.includes(vertex)) {
 			vertex = Math.floor(Math.random() * 12)
 		}
 		vertices.push(vertex)
-		let desiredDegree = Math.min(vertices.length - 1, Math.floor(Math.random() * (num - 3) + 1))
+		let desiredDegree = Math.min(vertices.length - 1, Math.floor(Math.random() * (num - 5) + 1))
 		let numEdges = 0
 		// Count the number of edges that already go to i
-		edges.forEach(e => {
-			let edge = JSON.parse(e)
+		for (let edgeStr of edges.keys()) {
+			let edge = JSON.parse(edgeStr)
 			if (edge.to === vertex) {
 				numEdges++
 			}
-		})
+		}
 		// Add edges if current degree < desiredDegree
 		while (numEdges < desiredDegree) {
 			// Find a different vertex j which doesn't share an edge with i
 			let j = vertices[Math.floor(Math.random() * vertices.length)]
-			while (j === vertex || edges.has(JSON.stringify({ from: vertex, to: j })) || edges.has(JSON.stringify({ from: j, to: vertex }))) {
+			while (
+				j === vertex ||
+				edges.has(JSON.stringify({ from: vertex, to: j })) ||
+				edges.has(JSON.stringify({ from: vertex, to: j })) ||
+				edges.has(JSON.stringify({ from: j, to: vertex })) ||
+				edges.has(JSON.stringify({ from: j, to: vertex }))
+			) {
 				j = vertices[Math.floor(Math.random() * vertices.length)]
 			}
-			edges.add(JSON.stringify({ from: vertex, to: j, highlight: false }))
+			edges.set(JSON.stringify({ from: vertex, to: j }), false)
 			numEdges++
 		}
 	}
@@ -229,7 +236,7 @@ function BFS() {
 			<div className="bfs-adjacency-list">
 				<Box text={vertex + 1} key={"bfs-adj-src" + vertex} id={`bfs-adjacency-node-${vertex}`} />
 				<p>:</p>
-				{[...obj.edges]
+				{[...obj.edges.keys()]
 					.filter(edge => JSON.parse(edge).to === vertex || JSON.parse(edge).from === vertex)
 					.map(edge =>
 						JSON.parse(edge).to === vertex ? (
@@ -252,9 +259,9 @@ function BFS() {
 		ctx.fillStyle = "#333333"
 		ctx.clearRect(0, 0, 2 * canvas.clientWidth, 2 * canvas.clientHeight)
 		ctx.fillRect(0, 0, 2 * canvas.clientWidth, 2 * canvas.clientHeight)
-		obj.edges.forEach(e => {
-			let edge = JSON.parse(e)
-			ctx.strokeStyle = edge.highlight ? window.getComputedStyle(document.querySelector(":root")).getPropertyValue("--mid") : "#1e1e1e"
+		for (let edgeStr of obj.edges.keys()) {
+			let edge = JSON.parse(edgeStr)
+			ctx.strokeStyle = obj.edges.get(edgeStr) ? window.getComputedStyle(document.querySelector(":root")).getPropertyValue("--mid") : "#1e1e1e"
 			let [x1, y1] = determineNodePosition(edge.from)
 			let [x2, y2] = determineNodePosition(edge.to)
 			x1 = x1 - r.left + 24
@@ -265,7 +272,7 @@ function BFS() {
 			ctx.moveTo(Math.floor(2 * x1), Math.floor(2 * y1))
 			ctx.lineTo(Math.floor(2 * x2), Math.floor(2 * y2))
 			ctx.stroke()
-		})
+		}
 	}, [determineNodePosition, obj])
 
 	// Set up graph
@@ -285,14 +292,17 @@ function BFS() {
 		if (!animationPlaying) {
 			return
 		}
+		// Highlight current node
 		let justVisited = obj.visited[obj.visited.length - 1]
 		let justVisitedEl = document.getElementById("bfs-b" + justVisited)
-		if (justVisitedEl) {
+		if (justVisitedEl !== undefined) {
 			if (justVisitedEl.classList.contains("midlight")) {
 				justVisitedEl.classList.remove("midlight")
 			}
 			justVisitedEl.classList.add("highlight")
 		}
+
+		// "Midlight" discovery edges
 		let adjNode = document.getElementById("bfs-adjacency-node-" + justVisited)
 		if (adjNode) {
 			adjNode.classList.add("highlight")
@@ -304,22 +314,15 @@ function BFS() {
 			// 		adjPrevNode.classList.add("midlight")
 			// 	}
 			// }
-			if (obj.enqueuedBy && obj.enqueuedBy !== -1) {
+			if (obj.enqueuedBy > -1) {
 				// Highlight connecting edge
-				obj.edges.delete(
-					JSON.stringify({
-						from: obj.enqueuedBy,
-						to: justVisited,
-						highlight: false,
-					})
-				)
-				obj.edges.add(
-					JSON.stringify({
-						from: obj.enqueuedBy,
-						to: justVisited,
-						highlight: true,
-					})
-				)
+				console.log(obj.edges)
+				console.log(JSON.stringify({ from: obj.enqueuedBy, to: justVisited }))
+				if (obj.edges.has(JSON.stringify({ from: obj.enqueuedBy, to: justVisited }))) {
+					obj.edges.set(JSON.stringify({ from: obj.enqueuedBy, to: justVisited }), true)
+				} else if (obj.edges.has(JSON.stringify({ from: justVisited, to: obj.enqueuedBy }))) {
+					obj.edges.set(JSON.stringify({ from: justVisited, to: obj.enqueuedBy }), true)
+				}
 				canvasDraw()
 				// Highlight corresponding edge representation in adjacency lists
 				let enqueuedByEl = document.getElementById(`bfs-adjacency-node-${obj.enqueuedBy}-${justVisited}`)
@@ -329,6 +332,7 @@ function BFS() {
 			}
 		}
 
+		// "Midlight" discovery nodes (unvisited neighbours of current node)
 		obj.queue.forEach(e => {
 			let el = document.getElementById("bfs-b" + e)
 			if (!el.classList.contains("midlight") && !el.classList.contains("highlight")) {
@@ -336,23 +340,22 @@ function BFS() {
 			}
 		})
 
+		// Cleanup if applicable
 		if (obj.finished) {
 			setAnimationPlaying(false)
 			let highlighted = [...document.querySelectorAll(".highlight")]
 			highlighted.forEach(e => e.classList.remove("highlight"))
 			let midlighted = [...document.querySelectorAll(".midlight")]
 			midlighted.forEach(e => e.classList.remove("midlight"))
-			obj.edges.forEach(e => {
-				let edge = JSON.parse(e)
-				if (edge.highlight) {
-					let newEdge = edge
-					newEdge.highlight = false
-					obj.edges.delete(JSON.stringify(edge))
-					obj.edges.add(JSON.stringify(newEdge))
+			for (let edgeStr of obj.edges.keys()) {
+				let edge = JSON.parse(edgeStr)
+				if (obj.edges.get(edgeStr)) {
+					obj.edges.set(JSON.stringify({ from: edge.from, to: edge.to }), false)
 				}
-			})
+			}
 			canvasDraw()
 		} else {
+			// Continue animation
 			setTimeout(() => setObj(obj.step()), 1000)
 		}
 	}, [animationPlaying, canvasDraw, obj])

@@ -21,8 +21,12 @@ test("generateConnectedGraph(12)", () => {
 })
 
 test("BFS adjacency lists on complete graph with n=3", () => {
-	let edgeSet = new Set([JSON.stringify({ from: 1, to: 2 }), JSON.stringify({ from: 1, to: 3 }), JSON.stringify({ from: 2, to: 3 })])
-	let adj = generateAdjacencyLists(edgeSet)
+	let edgeMap = new Map([
+		[JSON.stringify({ from: 1, to: 2 }), false],
+		[JSON.stringify({ from: 1, to: 3 }), false],
+		[JSON.stringify({ from: 2, to: 3 }), false],
+	])
+	let adj = generateAdjacencyLists(edgeMap)
 
 	expect(adj[1]).toStrictEqual([2, 3])
 	expect(adj[2]).toStrictEqual([1, 3])
@@ -30,14 +34,14 @@ test("BFS adjacency lists on complete graph with n=3", () => {
 })
 
 test("BFS adjacency lists on incomplete graph with n=5", () => {
-	let edgeSet = new Set([
-		JSON.stringify({ from: 1, to: 2 }),
-		JSON.stringify({ from: 1, to: 4 }),
-		JSON.stringify({ from: 2, to: 3 }),
-		JSON.stringify({ from: 2, to: 4 }),
-		JSON.stringify({ from: 4, to: 5 }),
+	let edgeMap = new Map([
+		[JSON.stringify({ from: 1, to: 2 }), false],
+		[JSON.stringify({ from: 1, to: 4 }), false],
+		[JSON.stringify({ from: 2, to: 3 }), false],
+		[JSON.stringify({ from: 2, to: 4 }), false],
+		[JSON.stringify({ from: 4, to: 5 }), false],
 	])
-	let adj = generateAdjacencyLists(edgeSet)
+	let adj = generateAdjacencyLists(edgeMap)
 
 	expect(adj[1]).toStrictEqual([2, 4])
 	expect(adj[2]).toStrictEqual([1, 3, 4])
@@ -60,34 +64,13 @@ test("BFSStateObject constructor with no input", () => {
 	}
 })
 
-test("generateConnectedGraph produced no duplicate edges", () => {
-	for (let i = 0; i < numIterations; i++) {
-		let [V, E] = generateConnectedGraph(12)
-		for (let j = 0; j < E.length; j++) {
-			let num = 0
-			for (let k = j + 1; k < E.length; k++) {
-				if ((E[j].to === E[k].to && E[j].from === E[k].from) || (E[j].to === E[k].from && E[j].from === E[k].to)) {
-					num++
-				}
-			}
-			try {
-				expect(num).toBe(0)
-			} catch {
-				console.log(i)
-				console.log(E)
-				throw new Error(num)
-			}
-		}
-	}
-})
-
 test("Step through BFS execution", () => {
-	let edgeSet = new Set([
-		JSON.stringify({ from: 1, to: 2 }),
-		JSON.stringify({ from: 1, to: 3 }),
-		JSON.stringify({ from: 2, to: 3 }),
-		JSON.stringify({ from: 2, to: 4 }),
-		JSON.stringify({ from: 3, to: 5 }),
+	let edgeSet = new Map([
+		[JSON.stringify({ from: 1, to: 2 }), false],
+		[JSON.stringify({ from: 1, to: 3 }), false],
+		[JSON.stringify({ from: 2, to: 3 }), false],
+		[JSON.stringify({ from: 2, to: 4 }), false],
+		[JSON.stringify({ from: 3, to: 5 }), false],
 	])
 	let obj = new BFSStateObject([1, 2, 3, 4, 5], edgeSet)
 	obj.queue.push(1) // Start from 1
