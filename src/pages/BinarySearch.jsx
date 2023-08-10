@@ -104,18 +104,12 @@ function BinarySearch() {
 
 	const initialTarget = nums[Math.floor(Math.random() * numBoxes)]
 
-	const [inputText, setInputText] = useState("" + initialTarget)
+	const [input, setInput] = useState(initialTarget)
 	const [obj, setObj] = useState(new BinarySearchStateObject(nums, initialTarget))
 	const [animationPlaying, setAnimationPlaying] = useState(false)
 	const [bsBoxWidth, setBsBoxWidth] = useState(0)
 
 	function handleInputClick() {
-		// Get user input and make sure it's valid
-		let num = parseInt(inputText)
-		if (isNaN(num) || animationPlaying) {
-			return
-		}
-
 		// Remove highlight from the animation if applicable
 		if (obj.found) {
 			document.getElementById("bs-b" + obj.mid).classList.remove("highlight")
@@ -123,7 +117,7 @@ function BinarySearch() {
 
 		// Start new search animation with a state update
 		setAnimationPlaying(true)
-		setObj(new BinarySearchStateObject(nums, num))
+		setObj(new BinarySearchStateObject(nums, input))
 	}
 
 	function handleRandomizeClick() {
@@ -138,7 +132,7 @@ function BinarySearch() {
 		// Randomize the numbers shown in the array
 		let newNums = generateSortedArray(numBoxes)
 		setNums(newNums)
-		setInputText(newNums[Math.floor(Math.random() * numBoxes)])
+		setInput(newNums[Math.floor(Math.random() * numBoxes)])
 	}
 
 	// Reset search state whenever the nums array changes
@@ -147,32 +141,13 @@ function BinarySearch() {
 	}, [nums])
 
 	/**
-	 * Event handler for keyDown on the input element, used to ensure that only numbers can be used as input
+	 * Event handler for change on the input element, used to update the state variable that tracks the number currently being searched for
 	 * @param {KeyboardEvent} e the keyboard event
 	 */
-	function handleInputKeyDown(e) {
-		let portionBeforeSelect = inputText.substring(0, e.target.selectionStart)
-		let portionAfterSelect = inputText.substring(e.target.selectionEnd, inputText.length)
-		let newText = ""
-		if (e.nativeEvent.key === "Backspace") {
-			if (e.target.selectionEnd - e.target.selectionStart === 0) {
-				portionBeforeSelect = inputText.substring(0, e.target.selectionStart - 1)
-			}
-			newText = portionBeforeSelect + portionAfterSelect
-			setInputText(newText)
-		} else if (e.nativeEvent.key === "Delete") {
-			if (e.target.selectionEnd - e.target.selectionStart === 0) {
-				portionAfterSelect = inputText.substring(e.target.selectionEnd + 1, inputText.length)
-			}
-			newText = portionBeforeSelect + portionAfterSelect
-			setInputText(newText)
-		} else if (e.nativeEvent.key === "Enter") {
-			handleInputClick()
-		} else {
-			newText = portionBeforeSelect + e.nativeEvent.key + portionAfterSelect
-			if (inputRegex.test(newText)) {
-				setInputText(newText)
-			}
+	function handleInputChange(e) {
+		let newValue = parseInt(e.target.value)
+		if (!animationPlaying) {
+			setInput(newValue)
 		}
 	}
 
@@ -315,7 +290,7 @@ function BinarySearch() {
 				<p className="title-description">search algorithm for sorted arrays</p>
 				<div id="bs-search">
 					<p>Search for:</p>
-					<input id="bs-search-input" value={inputText} onKeyDown={handleInputKeyDown} onChange={() => {}} />
+					<input type="number" id="bs-search-input" onChange={handleInputChange} />
 					<button id="bs-search-button" className="button" onClick={handleInputClick}>
 						GO
 					</button>
