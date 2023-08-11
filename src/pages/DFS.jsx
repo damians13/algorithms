@@ -4,7 +4,7 @@ import java from "react-syntax-highlighter/dist/cjs/languages/prism/java"
 import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism"
 import Box, { animatedMove } from "../components/Box"
 import { useCallback, useEffect, useState } from "react"
-import { generateAdjacencyLists, generateConnectedGraph } from "./BFS"
+import { determineNodePosition, generateAdjacencyLists, generateConnectedGraph, setupResizeEventListener } from "../components/Graph"
 
 /**
  * This class represents the state of the DFS algorithm and supports the associated animations
@@ -83,84 +83,8 @@ function DFS() {
 
 	// Setup window resize event listener and initialize dfsBoxWidth
 	useEffect(() => {
-		function handleResize() {
-			let boxes = document.getElementById("dfs-boxes")
-			if (boxes === null) {
-				return
-			}
-			setDFSBoxRect(boxes.getBoundingClientRect())
-		}
-		window.addEventListener("resize", handleResize)
-		// Trigger the initial box animation and update the state
-		handleResize()
+		setupResizeEventListener("dfs-boxes", setDFSBoxRect)
 	}, [])
-
-	let determineNodePosition = useCallback(
-		i => {
-			if (!dfsBoxRect) {
-				return [0, 0]
-			}
-			let widthStep = dfsBoxRect.width / 9
-			let heightStep = dfsBoxRect.height / 9
-			let x, y
-
-			switch (i) {
-				case 0:
-					x = 3
-					y = 0
-					break
-				case 1:
-					x = 5
-					y = 0
-					break
-				case 2:
-					x = 7
-					y = 1
-					break
-				case 3:
-					x = 8
-					y = 3
-					break
-				case 4:
-					x = 8
-					y = 5
-					break
-				case 5:
-					x = 7
-					y = 7
-					break
-				case 6:
-					x = 5
-					y = 8
-					break
-				case 7:
-					x = 3
-					y = 8
-					break
-				case 8:
-					x = 1
-					y = 7
-					break
-				case 9:
-					x = 0
-					y = 5
-					break
-				case 10:
-					x = 0
-					y = 3
-					break
-				case 11:
-					x = 1
-					y = 1
-					break
-				default:
-					console.error("Unexpected index given: " + i)
-			}
-
-			return [x * widthStep, y * heightStep]
-		},
-		[dfsBoxRect]
-	)
 
 	let generateAdjacencyListElements = useCallback(() => {
 		return obj.vertices.map(vertex => (
@@ -193,8 +117,8 @@ function DFS() {
 		for (let edgeStr of obj.edges.keys()) {
 			let edge = JSON.parse(edgeStr)
 			ctx.strokeStyle = obj.edges.get(edgeStr) ? window.getComputedStyle(document.querySelector(":root")).getPropertyValue("--mid") : "#1e1e1e"
-			let [x1, y1] = determineNodePosition(edge.from)
-			let [x2, y2] = determineNodePosition(edge.to)
+			let [x1, y1] = determineNodePosition(dfsBoxRect, edge.from)
+			let [x2, y2] = determineNodePosition(dfsBoxRect, edge.to)
 			x1 = x1 + 24
 			x2 = x2 + 24
 			y1 = y1 + 24
@@ -204,19 +128,19 @@ function DFS() {
 			ctx.lineTo(Math.floor(2 * x2), Math.floor(2 * y2))
 			ctx.stroke()
 		}
-	}, [determineNodePosition, obj])
+	}, [dfsBoxRect, obj])
 
 	// Set up graph
 	useEffect(() => {
 		for (let i = 0; i < 12; i++) {
 			if (document.getElementById("dfs-b" + i)) {
-				let [x, y] = determineNodePosition(i)
+				let [x, y] = determineNodePosition(dfsBoxRect, i)
 				animatedMove("dfs-b" + i, x + "px", y + "px", x + "px", y + "px")
 			}
 		}
 
 		canvasDraw()
-	}, [dfsBoxRect, canvasDraw, determineNodePosition])
+	}, [dfsBoxRect, canvasDraw])
 
 	// Handle the animation
 	useEffect(() => {
