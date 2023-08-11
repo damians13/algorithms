@@ -95,7 +95,6 @@ export function generateSortedArray(numBoxes) {
  */
 function BinarySearch() {
 	const numBoxes = 9
-	const inputRegex = /^-?\d*$/
 
 	SyntaxHighlighter.registerLanguage("java", java)
 
