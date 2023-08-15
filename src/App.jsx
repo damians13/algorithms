@@ -39,11 +39,11 @@ function App() {
 	const [hasLoaded, setHasLoaded] = useState(false)
 
 	const pages = [
-		{ path: "/binary-search", element: <BinarySearch /> },
-		{ path: "/selection-sort", element: <SelectionSort /> },
-		{ path: "/insertion-sort", element: <InsertionSort /> },
-		{ path: "/breadth-first-search", element: <BFS /> },
-		{ path: "/depth-first-search", element: <DFS /> },
+		{ path: "/algorithms/binary-search", element: <BinarySearch /> },
+		{ path: "/algorithms/selection-sort", element: <SelectionSort /> },
+		{ path: "/algorithms/insertion-sort", element: <InsertionSort /> },
+		{ path: "/algorithms/breadth-first-search", element: <BFS /> },
+		{ path: "/algorithms/depth-first-search", element: <DFS /> },
 	]
 
 	// Returns the path of a randomly chosen page
@@ -62,7 +62,7 @@ function App() {
 		<div id="app">
 			<Sidebar random={random} setColourScheme={setColourScheme} />
 			<Routes>
-				<Route path="/" element={<Home random={random} />} />
+				<Route path="/algorithms/" element={<Home random={random} />} />
 				{(() => {
 					let routes = []
 					pages.forEach(page => routes.push(<Route path={page.path} element={page.element} key={page.path} />))

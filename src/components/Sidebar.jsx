@@ -61,7 +61,7 @@ function Sidebar({ random, setColourScheme }) {
 		return (
 			<div id="sidebar-options" style={{ display: expanded ? "flex" : "none" }}>
 				<p>tools</p>
-				<Link to="/" className="sidebar-alg-button">
+				<Link to="/algorithms/" className="sidebar-alg-button">
 					home
 				</Link>
 				<button className="sidebar-alg-button" onClick={setColourScheme}>
@@ -71,20 +71,20 @@ function Sidebar({ random, setColourScheme }) {
 					random algorithm
 				</button>
 				<p>arrays</p>
-				<Link to="/binary-search" className="sidebar-alg-button">
+				<Link to="/algorithms/binary-search" className="sidebar-alg-button">
 					binary search
 				</Link>
-				<Link to="/insertion-sort" className="sidebar-alg-button">
+				<Link to="/algorithms/insertion-sort" className="sidebar-alg-button">
 					insertion sort
 				</Link>
-				<Link to="/selection-sort" className="sidebar-alg-button">
+				<Link to="/algorithms/selection-sort" className="sidebar-alg-button">
 					selection sort
 				</Link>
 				<p>graphs</p>
-				<Link to="/breadth-first-search" className="sidebar-alg-button">
+				<Link to="/algorithms/breadth-first-search" className="sidebar-alg-button">
 					breadth first search
 				</Link>
-				<Link to="/depth-first-search" className="sidebar-alg-button">
+				<Link to="/algorithms/depth-first-search" className="sidebar-alg-button">
 					depth first search
 				</Link>
 			</div>
