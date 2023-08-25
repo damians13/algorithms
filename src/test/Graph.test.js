@@ -1,4 +1,4 @@
-import { generateAdjacencyLists, generateConnectedGraph } from "../components/Graph"
+import { generateAdjacencyLists, generateConnectedGraph, generateWeightedConnectedGraph } from "../components/Graph"
 
 const numIterations = 500
 
@@ -17,6 +17,29 @@ test("generateConnectedGraph(12)", () => {
 
 		expect(vertices.length).toBe(12)
 		expect(edges.size).toBeLessThanOrEqual(132) // A complete graph with n vertices can have n(n-1) edges max
+	}
+})
+
+test("generateWeightedConnectedGraph(1)", () => {
+	for (let i = 0; i < numIterations; i++) {
+		let [vertices, edges] = generateWeightedConnectedGraph(1)
+
+		expect(vertices.length).toBe(1)
+		expect(edges.size).toBe(0)
+	}
+})
+
+test("generateWeightedConnectedGraph(12)", () => {
+	for (let i = 0; i < numIterations; i++) {
+		let [vertices, edges] = generateWeightedConnectedGraph(12)
+
+		expect(vertices.length).toBe(12)
+		expect(edges.size).toBeLessThanOrEqual(132) // A complete graph with n vertices can have n(n-1) edges max
+		for (let edgeStr of edges.keys()) {
+			let edge = JSON.parse(edgeStr)
+			expect(edge.weight).toBeLessThanOrEqual(99)
+			expect(edge.weight).toBeGreaterThanOrEqual(0)
+		}
 	}
 })
 

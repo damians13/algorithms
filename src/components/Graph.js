@@ -10,9 +10,10 @@ export function setupResizeEventListener(boxesID, setRectCallback) {
 	// Trigger the initial box animation and update the state
 	handleResize()
 }
+
 /*
  * Generates adjaency lists for the input graph G = (V, E)
- * @param {Object[]} E the set of edges in the graph
+ * @param {Object[]} E the map of edges in the graph
  */
 export function generateAdjacencyLists(E) {
 	let adjacencies = []
@@ -76,6 +77,28 @@ export function generateConnectedGraph(num) {
 		}
 	}
 	return [vertices, edges]
+}
+
+/**
+ * This function generates a weighted, connected graph with num vertices and non-negative.
+ * Each vertex will be assigned a random degree between 1 and num-1.
+ * @param {number} num the number of vertices to create in the graph
+ * @returns {*} G represents the created graph returned as an array to allow dereferencing,
+ * where index 0 is the vertices array, and index 1 is the edge map.
+ * Each vertex is an integer, each edge is a JSON string { from: int, to: int, weight: int }
+ * mapped to a boolean used to represent whether that edge should be highlighted in the animation.
+ */
+export function generateWeightedConnectedGraph(num) {
+	let [vertices, unweightedEdges] = generateConnectedGraph(num)
+
+	let weightedEdges = new Map()
+	for (let edgeStr of unweightedEdges.keys()) {
+		let edge = JSON.parse(edgeStr)
+		edge.weight = Math.floor(Math.random() * 100)
+		weightedEdges.set(JSON.stringify(edge), false)
+	}
+
+	return [vertices, weightedEdges]
 }
 
 export function determineNodePosition(rect, i) {
