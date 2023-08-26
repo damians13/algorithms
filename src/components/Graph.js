@@ -32,6 +32,25 @@ export function generateAdjacencyLists(E) {
 	return adjacencies
 }
 
+/*
+ * Generates adjaency lists for the input weighted graph G = (V, E)
+ * @param {Object[]} E the map of edges in the graph
+ */
+export function generateWeightedAdjacencyLists(E) {
+	let adjacencies = []
+	for (let i = 0; i < 12; i++) {
+		let arr = []
+		for (let edgeStr of E.keys()) {
+			let edge = JSON.parse(edgeStr)
+			if (edge.to === i || edge.from === i) {
+				arr.push(edge)
+			}
+		}
+		adjacencies.push(arr)
+	}
+	return adjacencies
+}
+
 /**
  * This function generates a connected graph with num vertices.
  * Each vertex will be assigned a random degree between 1 and num-1.

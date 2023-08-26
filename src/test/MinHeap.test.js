@@ -279,9 +279,9 @@ describe("MinHeap functions on a simple object", () => {
 	})
 
 	test("insert", () => {
-		heap.insert({ weight: 2, value: "b" })
-		heap.insert({ weight: 3, value: "c" })
-		heap.insert({ weight: 1, value: "a" })
+		heap.insert({ value: "b", weight: 2 })
+		heap.insert({ value: "c", weight: 3 })
+		heap.insert({ value: "a", weight: 1 })
 
 		expect(heap.array[0].weight).toBe(1)
 		expect(heap.array[0].value).toBe("a")
@@ -289,5 +289,16 @@ describe("MinHeap functions on a simple object", () => {
 		expect(heap.array[1].value).toBe("c")
 		expect(heap.array[2].weight).toBe(2)
 		expect(heap.array[2].value).toBe("b")
+	})
+
+	test("remove min", () => {
+		heap.array = heap.array = [
+			{ weight: 1, value: "a" },
+			{ weight: 3, value: "c" },
+			{ weight: 2, value: "b" },
+		]
+		expect(heap.removeMin()).toStrictEqual({ weight: 1, value: "a" })
+		expect(heap.removeMin()).toStrictEqual({ weight: 2, value: "b" })
+		expect(heap.removeMin()).toStrictEqual({ weight: 3, value: "c" })
 	})
 })
