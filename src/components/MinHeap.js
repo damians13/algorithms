@@ -1,24 +1,23 @@
 class MinHeap {
-	constructor(lessThan = (a, b) => a < b, getValue = e => e) {
+	constructor(getValue = e => e) {
 		// Using an array to represent a complete binary tree
 		this.array = []
-		this.lessThan = lessThan
 		this.getValue = getValue
 	}
 
 	heapifyDown(i) {
 		if (this.hasRightChild(i)) {
 			// Has two child nodes
-			if (this.lessThan(this.getRightChildValue(i), this.getLeftChildValue(i)) && this.lessThan(this.getRightChildValue(i), this.getValue(this.array[i]))) {
+			if (this.getRightChildValue(i) < this.getLeftChildValue(i) && this.getRightChildValue(i) < this.getValue(this.array[i])) {
 				this.swap(i, this.getRightChildIndex(i))
 				this.heapifyDown(this.getRightChildIndex(i))
-			} else if (this.lessThan(this.getLeftChildValue(i), this.getValue(this.array[i]))) {
+			} else if (this.getLeftChildValue(i) < this.getValue(this.array[i])) {
 				this.swap(i, this.getLeftChildIndex(i))
 				this.heapifyDown(this.getLeftChildIndex(i))
 			}
 		} else if (this.hasLeftChild(i)) {
 			// Has one child node
-			if (this.lessThan(this.getLeftChildValue(i), this.getValue(this.array[i]))) {
+			if (this.getLeftChildValue(i) < this.getValue(this.array[i])) {
 				this.swap(i, this.getLeftChildIndex(i))
 				this.heapifyDown(this.getLeftChildIndex(i))
 			}
@@ -27,7 +26,7 @@ class MinHeap {
 	}
 
 	heapifyUp(i) {
-		if (this.hasParent(i) && this.lessThan(this.getValue(this.array[i]), this.getParentValue(i))) {
+		if (this.hasParent(i) && this.getValue(this.array[i]) < this.getParentValue(i)) {
 			this.swap(i, this.getParentIndex(i))
 			this.heapifyUp(this.getParentIndex(i))
 		}

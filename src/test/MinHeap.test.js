@@ -186,24 +186,108 @@ test("MinHeap removeMin", () => {
 	expect(heap.removeMin()).toBe(3)
 })
 
-describe("MinHeap priority queue core functions on a simple object", () => {
+describe("MinHeap functions on a simple object", () => {
 	let heap
 	beforeEach(() => {
-		heap = new MinHeap(
-			(a, b) => a.weight < b.weight,
-			e => e.weight
-		)
+		heap = new MinHeap(e => e.weight)
+	})
+
+	test("get child values", () => {
+		heap.array = [
+			{ weight: 2, value: "b" },
+			{ weight: 3, value: "c" },
+			{ weight: 1, value: "a" },
+		]
+		expect(heap.getRightChildValue(0)).toBe(1)
+		expect(heap.getLeftChildValue(0)).toBe(3)
+	})
+
+	test("get parent", () => {
+		heap.array = [
+			{ weight: 2, value: "b" },
+			{ weight: 3, value: "c" },
+			{ weight: 1, value: "a" },
+		]
+		expect(heap.getParentValue(1)).toBe(2)
+		expect(heap.getParentValue(2)).toBe(2)
+	})
+
+	test("has parent", () => {
+		heap.array = [
+			{ weight: 2, value: "b" },
+			{ weight: 3, value: "c" },
+			{ weight: 1, value: "a" },
+		]
+		expect(heap.hasParent(0)).toBe(false)
+		expect(heap.hasParent(1)).toBe(true)
+		expect(heap.hasParent(2)).toBe(true)
+	})
+
+	test("has child", () => {
+		heap.array = [
+			{ weight: 2, value: "b" },
+			{ weight: 3, value: "c" },
+			{ weight: 1, value: "a" },
+		]
+		// Left
+		expect(heap.hasLeftChild(0)).toBe(true)
+		expect(heap.hasLeftChild(1)).toBe(false)
+		expect(heap.hasLeftChild(2)).toBe(false)
+		// Right
+		expect(heap.hasRightChild(0)).toBe(true)
+		expect(heap.hasRightChild(1)).toBe(false)
+		expect(heap.hasRightChild(2)).toBe(false)
+		heap.array.pop()
+		expect(heap.hasRightChild(0)).toBe(false)
+		expect(heap.hasRightChild(1)).toBe(false)
+		expect(heap.hasRightChild(2)).toBe(false)
+	})
+
+	test("swap", () => {
+		heap.array = [
+			{ weight: 2, value: "b" },
+			{ weight: 3, value: "c" },
+		]
+		heap.swap(0, 1)
+		expect(heap.array[0]).toStrictEqual({ weight: 3, value: "c" })
+		expect(heap.array[1]).toStrictEqual({ weight: 2, value: "b" })
+	})
+
+	test("heapify up", () => {
+		heap.array = [
+			{ weight: 2, value: "b" },
+			{ weight: 3, value: "c" },
+			{ weight: 1, value: "a" },
+		]
+
+		heap.heapifyUp(2)
+		expect(heap.array[0]).toStrictEqual({ weight: 1, value: "a" })
+		expect(heap.array[1]).toStrictEqual({ weight: 3, value: "c" })
+		expect(heap.array[2]).toStrictEqual({ weight: 2, value: "b" })
+	})
+
+	test("heapify down", () => {
+		heap.array = [
+			{ weight: 2, value: "b" },
+			{ weight: 3, value: "c" },
+			{ weight: 1, value: "a" },
+		]
+		heap.heapifyDown(0)
+		expect(heap.array[0]).toStrictEqual({ weight: 1, value: "a" })
+		expect(heap.array[1]).toStrictEqual({ weight: 3, value: "c" })
+		expect(heap.array[2]).toStrictEqual({ weight: 2, value: "b" })
 	})
 
 	test("insert", () => {
 		heap.insert({ weight: 2, value: "b" })
 		heap.insert({ weight: 3, value: "c" })
 		heap.insert({ weight: 1, value: "a" })
+
 		expect(heap.array[0].weight).toBe(1)
 		expect(heap.array[0].value).toBe("a")
-		expect(heap.array[1].weight).toBe(2)
-		expect(heap.array[1].value).toBe("b")
-		expect(heap.array[2].weight).toBe(3)
-		expect(heap.array[2].value).toBe("c")
+		expect(heap.array[1].weight).toBe(3)
+		expect(heap.array[1].value).toBe("c")
+		expect(heap.array[2].weight).toBe(2)
+		expect(heap.array[2].value).toBe("b")
 	})
 })
