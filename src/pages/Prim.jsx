@@ -24,6 +24,7 @@ export class PrimStateObject {
 
 		this.visited = []
 		this.edgeQueue = new MinHeap(e => e.weight)
+		this.mostRecentEdge = null
 		this.finished = false
 	}
 
@@ -47,12 +48,13 @@ export class PrimStateObject {
 			obj.finished = true
 			return obj
 		}
+		obj.mostRecentEdge = edge
 
 		// Determine which vertex is new and mark it as visited
 		let vertex
 		if (edge.from === null) {
 			// First vertex case
-			vertex = 1
+			vertex = edge.to
 		} else if (obj.visited.includes(edge.to)) {
 			vertex = edge.from
 		} else {
@@ -94,7 +96,7 @@ function Prim() {
 		ctx.fillRect(0, 0, 2 * canvas.clientWidth, 2 * canvas.clientHeight)
 		for (let edgeStr of obj.edges.keys()) {
 			let edge = JSON.parse(edgeStr)
-			ctx.lineWidth = edge.weight / 1.6 + 4
+			ctx.lineWidth = 16 - edge.weight / 2
 			ctx.strokeStyle = obj.edges.get(edgeStr) ? window.getComputedStyle(document.querySelector(":root")).getPropertyValue("--mid") : "#1e1e1e"
 			let [x1, y1] = determineNodePosition(primBoxRect, edge.from)
 			let [x2, y2] = determineNodePosition(primBoxRect, edge.to)
@@ -125,14 +127,12 @@ function Prim() {
 		if (animationPlaying) {
 			return
 		}
-		let n = numRef.current - 1
+		let n = numRef.current.value - 1
 		if (obj.vertices.includes(n)) {
-			obj.queue.push(n)
-			setAnimationPlaying(true)
 			let newObj = new PrimStateObject(obj.vertices, obj.edges)
-			newObj.queue.push(n)
-			newObj.enqueuedList.push(-1)
+			newObj.edgeQueue.insert({ from: null, to: n, weight: 0 })
 			setObj(newObj.step())
+			setAnimationPlaying(true)
 		}
 	}
 
@@ -141,6 +141,87 @@ function Prim() {
 			setObj(new PrimStateObject())
 		}
 	}
+
+	// Handle the animation
+	useEffect(() => {
+		if (!animationPlaying) {
+			return
+		}
+		// Highlight current node
+		let justVisited = obj.visited[obj.visited.length - 1]
+		let justVisitedEl = document.getElementById("prim-b" + justVisited)
+		if (justVisitedEl !== undefined) {
+			if (justVisitedEl.classList.contains("midlight")) {
+				justVisitedEl.classList.remove("midlight")
+			}
+			justVisitedEl.classList.add("highlight")
+		}
+
+		// "Midlight" discovery edges
+		let adjNode = document.getElementById("prim-adjacency-node-" + justVisited)
+		if (adjNode) {
+			adjNode.classList.add("highlight")
+			if (obj.mostRecentEdge !== null && obj.mostRecentEdge.from !== null) {
+				let enqueuedByVertex = obj.mostRecentEdge.from === justVisited ? obj.mostRecentEdge.to : obj.mostRecentEdge.from
+				// Highlight connecting edge
+				let matchStr1 = JSON.stringify({ from: enqueuedByVertex, to: justVisited })
+				let matchStr2 = JSON.stringify({ from: justVisited, to: enqueuedByVertex })
+				matchStr1 = matchStr1.substring(0, matchStr1.length - 1) + ","
+				matchStr2 = matchStr2.substring(0, matchStr2.length - 1) + ","
+				// Search through edges to find the matching edge, necessary because we don't know the weight
+				console.log(matchStr1)
+				console.log(matchStr2)
+				for (let edgeStr of obj.edges.keys()) {
+					console.log(edgeStr)
+					if (edgeStr.includes(matchStr1)) {
+						obj.edges.set(edgeStr, true)
+						console.log("match1")
+						break
+					} else if (edgeStr.includes(matchStr2)) {
+						obj.edges.set(edgeStr, true)
+						console.log("match2")
+						break
+					}
+				}
+				console.log("\n")
+
+				canvasDraw()
+				// Highlight corresponding edge representation in adjacency lists
+				let enqueuedByEl = document.getElementById(`prim-adjacency-node-${enqueuedByVertex}-${justVisited}`)
+				if (enqueuedByEl) {
+					enqueuedByEl.classList.add("midlight")
+				}
+			}
+		}
+
+		// "Midlight" discovery nodes (unvisited neighbours of current node)
+		obj.edgeQueue.array.forEach(enqueuedEdge => {
+			let e = enqueuedEdge.from === justVisited ? enqueuedEdge.to : enqueuedEdge.from
+			let el = document.getElementById("prim-b" + e)
+			if (!el.classList.contains("midlight") && !el.classList.contains("highlight")) {
+				el.classList.add("midlight")
+			}
+		})
+
+		// Cleanup if applicable
+		if (obj.finished) {
+			setAnimationPlaying(false)
+			let highlighted = [...document.querySelectorAll(".highlight")]
+			highlighted.forEach(e => e.classList.remove("highlight"))
+			let midlighted = [...document.querySelectorAll(".midlight")]
+			midlighted.forEach(e => e.classList.remove("midlight"))
+			for (let edgeStr of obj.edges.keys()) {
+				let edge = JSON.parse(edgeStr)
+				if (obj.edges.get(edgeStr)) {
+					obj.edges.set(JSON.stringify({ from: edge.from, to: edge.to, weight: edge.weight }), false)
+				}
+			}
+			canvasDraw()
+		} else {
+			// Continue animation
+			setTimeout(() => setObj(obj.step()), 1000)
+		}
+	}, [obj, canvasDraw, animationPlaying])
 
 	let generateAdjacencyListElements = useCallback(() => {
 		return obj.vertices.map(vertex => (
@@ -189,7 +270,7 @@ function Prim() {
 						</button>
 					</div>
 					<div id="prim-adjacency-list">
-						<p id="prim-adj-list-label">Adjacency lists:</p>
+						<p id="prim-adj-list-label">Adjacency lists: (with weights)</p>
 						{generateAdjacencyListElements()}
 					</div>
 				</div>
@@ -198,6 +279,7 @@ function Prim() {
 				<div className="fg-box">
 					<p className="extra-box-text">Steps</p>
 					<div className="extra-box-children">
+						<i>Edges with lower weights are shown with thicker lines.</i>
 						<ol type="1">
 							<li>
 								Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci sunt optio labore non, commodi deleniti quae sequi in ipsam nemo sapiente
