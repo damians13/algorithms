@@ -31,7 +31,7 @@
 	position: static;
 	margin: 4px;
 	min-width: 28px;
-	max-width: 28px;
+	/* max-width: 28px; */
 	min-height: 28px;
 	font-size: small;
 }

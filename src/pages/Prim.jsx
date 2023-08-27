@@ -2,8 +2,10 @@ import "../styles/Prim.css"
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter"
 import java from "react-syntax-highlighter/dist/cjs/languages/prism/java"
 import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism"
-import { generateWeightedAdjacencyLists, generateWeightedConnectedGraph } from "../components/Graph"
+import { determineNodePosition, generateWeightedAdjacencyLists, generateWeightedConnectedGraph, setupResizeEventListener } from "../components/Graph"
 import MinHeap from "../components/MinHeap"
+import { useCallback, useEffect, useRef, useState } from "react"
+import Box, { animatedMove } from "../components/Box"
 
 export class PrimStateObject {
 	constructor(vertices, edges) {
@@ -71,9 +73,100 @@ export class PrimStateObject {
 function Prim() {
 	SyntaxHighlighter.registerLanguage("java", java)
 
-	function handleGoClick() {}
-	function handleRandomizeClick() {}
-	function generateAdjacencyListElements() {}
+	const [obj, setObj] = useState(new PrimStateObject())
+	const [primBoxRect, setPrimBoxRect] = useState(null)
+	const [animationPlaying, setAnimationPlaying] = useState(false)
+	let numRef = useRef()
+
+	// Setup window resize event listener and initialize bfsBoxWidth
+	useEffect(() => {
+		setupResizeEventListener("prim-boxes", setPrimBoxRect)
+	}, [])
+
+	let canvasDraw = useCallback(() => {
+		let canvas = document.getElementById("prim-edge-canvas")
+		let r = canvas.getBoundingClientRect()
+		canvas.width = 2 * r.width
+		canvas.height = 2 * r.height
+		let ctx = canvas.getContext("2d", { alpha: false })
+		ctx.fillStyle = "#333333"
+		ctx.clearRect(0, 0, 2 * canvas.clientWidth, 2 * canvas.clientHeight)
+		ctx.fillRect(0, 0, 2 * canvas.clientWidth, 2 * canvas.clientHeight)
+		for (let edgeStr of obj.edges.keys()) {
+			let edge = JSON.parse(edgeStr)
+			ctx.lineWidth = edge.weight / 1.6 + 4
+			ctx.strokeStyle = obj.edges.get(edgeStr) ? window.getComputedStyle(document.querySelector(":root")).getPropertyValue("--mid") : "#1e1e1e"
+			let [x1, y1] = determineNodePosition(primBoxRect, edge.from)
+			let [x2, y2] = determineNodePosition(primBoxRect, edge.to)
+			x1 = x1 + 24
+			x2 = x2 + 24
+			y1 = y1 + 24
+			y2 = y2 + 24
+			ctx.beginPath()
+			ctx.moveTo(Math.floor(2 * x1), Math.floor(2 * y1))
+			ctx.lineTo(Math.floor(2 * x2), Math.floor(2 * y2))
+			ctx.stroke()
+		}
+	}, [obj, primBoxRect])
+
+	// Set up graph
+	useEffect(() => {
+		for (let i = 0; i < 12; i++) {
+			if (document.getElementById("prim-b" + i)) {
+				let [x, y] = determineNodePosition(primBoxRect, i)
+				animatedMove("prim-b" + i, x + "px", y + "px", x + "px", y + "px")
+			}
+		}
+
+		canvasDraw()
+	}, [primBoxRect, canvasDraw])
+
+	function handleGoClick() {
+		if (animationPlaying) {
+			return
+		}
+		let n = numRef.current - 1
+		if (obj.vertices.includes(n)) {
+			obj.queue.push(n)
+			setAnimationPlaying(true)
+			let newObj = new PrimStateObject(obj.vertices, obj.edges)
+			newObj.queue.push(n)
+			newObj.enqueuedList.push(-1)
+			setObj(newObj.step())
+		}
+	}
+
+	function handleRandomizeClick() {
+		if (!animationPlaying) {
+			setObj(new PrimStateObject())
+		}
+	}
+
+	let generateAdjacencyListElements = useCallback(() => {
+		return obj.vertices.map(vertex => (
+			<div className="prim-adjacency-list">
+				<Box text={vertex + 1} key={"prim-adj-src" + vertex} id={`prim-adjacency-node-${vertex}`} />
+				<p>:</p>
+				{[...obj.edges.keys()]
+					.filter(edge => JSON.parse(edge).to === vertex || JSON.parse(edge).from === vertex)
+					.map(edge =>
+						JSON.parse(edge).to === vertex ? (
+							<Box
+								text={`${JSON.parse(edge).from + 1} (${JSON.parse(edge).weight})`}
+								key={`prim-adjacency-node-${edge}-from`}
+								id={`prim-adjacency-node-${vertex}-${JSON.parse(edge).from}`}
+							/>
+						) : (
+							<Box
+								text={`${JSON.parse(edge).to + 1} (${JSON.parse(edge).weight})`}
+								key={`prim-adjacency-node-${edge}-to`}
+								id={`prim-adjacency-node-${vertex}-${JSON.parse(edge).to}`}
+							/>
+						)
+					)}
+			</div>
+		))
+	}, [obj])
 
 	return (
 		<div className="page">
@@ -83,10 +176,11 @@ function Prim() {
 				<div id="prim-content">
 					<div id="prim-boxes">
 						<canvas id="prim-edge-canvas"></canvas>
+						{(() => obj.vertices.map(vertex => <Box text={vertex + 1} id={"prim-b" + vertex} key={"prim-box" + vertex} />))()}
 					</div>
 					<div id="prim-buttons">
 						<label htmlFor="prim-start-number">Start from</label>
-						<input type="number" min="1" max="12" name="prim-start-number" id="prim-start-num" />
+						<input type="number" min="1" max="12" name="prim-start-number" id="prim-start-num" ref={numRef} />
 						<button className="button prim-button" onClick={handleGoClick}>
 							GO
 						</button>

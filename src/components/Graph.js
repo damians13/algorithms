@@ -113,7 +113,7 @@ export function generateWeightedConnectedGraph(num) {
 	let weightedEdges = new Map()
 	for (let edgeStr of unweightedEdges.keys()) {
 		let edge = JSON.parse(edgeStr)
-		edge.weight = Math.floor(Math.random() * 100)
+		edge.weight = Math.floor(Math.random() * 20)
 		weightedEdges.set(JSON.stringify(edge), false)
 	}
 
