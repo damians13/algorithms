@@ -8,6 +8,7 @@ import SelectionSort from "./pages/SelectionSort"
 import InsertionSort from "./pages/InsertionSort"
 import BFS from "./pages/BFS"
 import DFS from "./pages/DFS"
+import Prim from "./pages/Prim"
 
 function setColourScheme() {
 	let root = document.querySelector(":root")
@@ -44,6 +45,7 @@ function App() {
 		{ path: "/algorithms/insertion-sort", element: <InsertionSort /> },
 		{ path: "/algorithms/breadth-first-search", element: <BFS /> },
 		{ path: "/algorithms/depth-first-search", element: <DFS /> },
+		{ path: "/algorithms/prim", element: <Prim /> },
 	]
 
 	// Returns the path of a randomly chosen page

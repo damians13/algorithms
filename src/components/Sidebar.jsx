@@ -87,6 +87,9 @@ function Sidebar({ random, setColourScheme }) {
 				<Link to="/algorithms/depth-first-search" className="sidebar-alg-button">
 					depth first search
 				</Link>
+				<Link to="/algorithms/prim" className="sidebar-alg-button">
+					Prim's algorithm
+				</Link>
 			</div>
 		)
 	}
