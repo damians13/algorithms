@@ -282,24 +282,88 @@ function Prim() {
 						<i>Edges with lower weights are shown with thicker lines.</i>
 						<ol type="1">
 							<li>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci sunt optio labore non, commodi deleniti quae sequi in ipsam nemo sapiente
-								repellendus ratione mollitia reprehenderit voluptatem illum eligendi rem saepe!
+								Create a minimum priority queue <code>Q</code> to store encountered edges, using an edge's weight as its priority
+							</li>
+							<li>Create lists to store edges in the spanning tree (result) and nodes that have been visited</li>
+							<li>
+								Mark the starting vertex as visited and add all edges incident on it to <code>Q</code>
 							</li>
 							<li>
-								Labore placeat rem aspernatur voluptates minus soluta, cupiditate non animi dolor delectus deleniti a accusamus voluptate nostrum dolores sed?
-								Corporis cupiditate accusantium fugiat quod facere similique suscipit. Dignissimos, dolorem dolores.
+								While <code>Q</code> is not empty, do the following:
 							</li>
-							<li>
-								Ea error, incidunt esse tempore expedita nihil alias numquam quibusdam eaque eligendi sed nam iste perspiciatis dicta veniam commodi nobis.
-								Laudantium, hic voluptates! Aspernatur modi itaque veniam tenetur, vel sequi!
-							</li>
+							<ol type="a">
+								<li>
+									Get the minimum priority edge from <code>Q</code> that is not internal in the spanning tree (one vertex of the edge is not in the spanning
+									tree), call this edge <code>e</code>. If there is no such edge, the algorithm is finished
+								</li>
+								<li>
+									Add <code>e</code> to the spanning tree
+								</li>
+								<li>Mark the newly encountered vertex as visited</li>
+								<li>
+									Add each edge incident on the newly encountered vertex to <code>Q</code>
+								</li>
+							</ol>
+							<li>Each vertex connected to the starting vertex either directly or indirectly is now in the spanning tree, and the algorithm is finished</li>
 						</ol>
 					</div>
 				</div>
 				<div className="fg-box">
 					<p className="extra-box-text">Code</p>
 					<div className="extra-box-children">
-						<SyntaxHighlighter language="java" style={tomorrow} showLineNumbers>{`// example code here`}</SyntaxHighlighter>
+						<SyntaxHighlighter language="java" style={tomorrow} showLineNumbers>{`public class Edge {
+    public int from, to, weight;
+    public Edge(int from, int to, int weight) {
+        this.from = from;
+        this.to = to;
+        this.weight = weight;
+    }
+}
+
+class CompareEdges implements Comparator<Edge> {
+	public int compare(Edge a, Edge b) {
+		return a.weight - b.weight;
+	}
+}
+
+private List<Edge> prim(int start, List<Integer> vertices,
+    Map<Integer, List<Edge>> adjacencies) {
+    // Setup
+	Comparator<Edge> c = new CompareEdges();
+	PriorityQueue<Edge> Q = new PriorityQueue<>(c);
+	List<Edge> spanningTree = new ArrayList<>();
+	List<Integer> visited = new ArrayList<>();
+	// Start the algorithm
+	visited.add(start);
+	for (Edge incidentEdge : adjacencies.get(start)) {
+	    Q.add(incidentEdge);
+	}
+	// Main loop
+	while (!Q.isEmpty()) {
+	    // Get the minimum weighted edge in the queue that is not
+	    // internal in the spanning tree
+	    Edge e = Q.remove();
+	    while (visited.contains(e.from) && visited.contains(e.to)) {
+	        try {
+    	        e = Q.remove();
+	        } catch (NoSuchElementException ex) {
+	            // No more edges in the queue, algorithm is finished
+	            return spanningTree;
+	        }
+	    }
+	    // Determine which vertex was just connected to the tree
+	    int newVertex = visited.contains(e.from) ? e.to : e.from;
+	    // Mark this edge as part of the tree and the newly
+	    // connected vertex as visited
+	    spanningTree.add(e);
+	    visited.add(newVertex);
+	    // Enqueue all edges which are incident on the new vertex
+	    for (Edge incidentEdge : adjacencies.get(newVertex)) {
+	        Q.add(incidentEdge);
+	    }
+	}
+	return spanningTree;
+}`}</SyntaxHighlighter>
 					</div>
 				</div>
 			</div>
