@@ -20,7 +20,7 @@ jobs:
       run: |
         git config user.name $name
         git config user.email $email
-        git remote add origin https://${secret}@github.com/$repo
+        git remote set-url origin https://${secret}@github.com/$repo
       env:
         name: 'Bob-the-bot'
         email: 'robert-the-robot@users.noreply.github.com'
