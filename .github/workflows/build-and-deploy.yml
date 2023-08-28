@@ -16,6 +16,13 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '14.x'
+    - name: Set GitHub credentials
+      run: |
+        git config user.name $name
+        git config user.email $email
+      env:
+        name: 'bob-the-bot'
+        email: 'bob-the-bot@users.noreply.github.com'
     - name: Install dependencies
       run: npm ci
     - name: Deploy to GitHub pages
