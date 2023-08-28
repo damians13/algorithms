@@ -22,7 +22,7 @@ jobs:
         git config user.email $email
         git remote add origin https://${secret}@github.com/$repo
       env:
-        name: 'Bob the bot'
+        name: 'Bob-the-bot'
         email: 'robert-the-robot@users.noreply.github.com'
         secret: ${{ secrets.CICD_SECRET }}
         repo: ${{ github.repository }}
