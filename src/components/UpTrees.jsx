@@ -44,6 +44,10 @@ class UpTrees {
 		}
 		return e
 	}
+
+	has(e) {
+		return this.forest.has(e)
+	}
 }
 
 export default UpTrees

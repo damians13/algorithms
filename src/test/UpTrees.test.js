@@ -29,6 +29,13 @@ describe("UpTrees simple tests", () => {
 		expect(forest.find(1)).toBe(1)
 		expect(forest.find(2)).toBe(1)
 	})
+
+	test("has", () => {
+		expect(forest.has(0)).toBe(false)
+		expect(forest.has(1)).toBe(true)
+		expect(forest.has(2)).toBe(true)
+		expect(forest.has(3)).toBe(false)
+	})
 })
 
 describe("UpTrees more involved tests", () => {
