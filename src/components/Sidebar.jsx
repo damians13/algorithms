@@ -90,6 +90,9 @@ function Sidebar({ random, setColourScheme }) {
 				<Link to="/algorithms/prim" className="sidebar-alg-button">
 					Prim's algorithm
 				</Link>
+				<Link to="/algorithms/kruskal" className="sidebar-alg-button">
+					Kruskal's algorithm
+				</Link>
 			</div>
 		)
 	}

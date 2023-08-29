@@ -1,6 +1,9 @@
+import "../styles/Kruskal.css"
 import { generateWeightedConnectedGraph } from "../components/Graph"
 import MinHeap from "../components/MinHeap"
 import UpTrees from "../components/UpTrees"
+import Box from "../components/Box"
+import { useState } from "react"
 
 export class KruskalStateObject {
 	constructor(vertices, edges) {
@@ -66,3 +69,34 @@ export class KruskalStateObject {
 		return obj
 	}
 }
+
+function Kruskal() {
+	const [obj, setObj] = useState(new KruskalStateObject())
+	const [kruBoxRect, setKruBoxRect] = useState(null)
+	const [animationPlaying, setAnimationPlaying] = useState(false)
+
+	return (
+		<div className="page">
+			<div id="kru-box" className="fg-box">
+				<p className="title-text">Kruskal's algorithm</p>
+				<p className="title-description">minimum spanning tree of a weighted graph</p>
+				<div id="kru-content">
+					<div id="kru-boxes">
+						<canvas id="kru-edge-canvas"></canvas>
+						{(() => obj.vertices.map(vertex => <Box text={vertex + 1} id={"kru-b" + vertex} key={"kru-box" + vertex} />))()}
+					</div>
+					<div id="kru-buttons">
+						<button className="button kru-button">GO</button>
+						<button className="button kru-button">RANDOMIZE</button>
+					</div>
+					<div id="kru-right-hand-side">
+						<div id="kru-edge-queue"></div>
+						<div id="kru-disjoint-sets"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}
+
+export default Kruskal
